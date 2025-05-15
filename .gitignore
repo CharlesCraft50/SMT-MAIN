@@ -1,0 +1,5 @@
+# Ignore all files in php-api/content/
+php-api/content/*
+
+# But keep the directory with a placeholder file
+!php-api/content/.gitkeep
