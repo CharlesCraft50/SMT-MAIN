@@ -12,13 +12,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <body>
-    <div class="container mt-5 mb-5" style="margin-top: 5rem !important;">
+    <div class="container" style="margin-top: 3rem !important;">
         <div class="content d-flex justify-content-center align-items-center">
-            <h1 class="text-center roboto-black f-blue">CHECK RECORDS</h1>
+            <h1 class="text-center roboto-black f-blue">SIGN-IN</h1>
         </div>
     </div>
 
-    <div class="container mt-5 mb-5" style="margin-top: 5rem !important;">
+    <div class="container" style="">
+      <div class="content d-flex justify-content-center align-items-center">
+        <div class="">
+          <div>
+              <!-- <input type="number" id="studentID" required>
+              <div class="underline"></div>
+              <label>Student Number</label>
+              <button type="submit" class="submit-btn">
+                <i class="bi bi-arrow-right fs-2"></i>
+              </button> -->
+              <div class="card" style="width: 18rem;">
+                <img src="../images/tap-id.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <div id="responseMessage" class="mt-3 text-center d-flex justify-content-center align-items-center"></div>
+                  <p class="card-text text-center">Please Tap Your ID</p>
+                  
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mt-3 mb-5" style="">
       <div class="content d-flex justify-content-center align-items-center">
         <div class="wrapper">
           <form class="input-data" id="attendanceForm">
@@ -28,11 +51,12 @@
               <button type="submit" class="submit-btn">
                 <i class="bi bi-arrow-right fs-2"></i>
               </button>
-              <div id="responseMessage" class="mt-3"></div>
           </form>
         </div>
       </div>
     </div>
+
+    
 
     <!-- Floating Icon -->
     <div class="position-fixed bottom-0 end-0 m-3">
@@ -169,8 +193,9 @@
       }
     </style>
 
-<script>
+    <script>
       $(document).ready(function(){
+        $('#studentID').focus();
         $('#attendanceForm').submit(function(event){
           event.preventDefault();
           const studentID = $('#studentID').val();
@@ -185,19 +210,42 @@
               responseMessage.empty();
 
               if (response.status === 'success') {
-                responseMessage.html(`<div class="alert alert-success">${response.message}</div>`);
+                responseMessage.html(`<div class="modern-alert modern-alert-success" style="position: absolute;">Successfully Login!</div>`);
                 setTimeout(function () {
                   window.location.href = 'StudentInformation.php';
-                }, 2000);
+                }, 300);
               } else {
-                responseMessage.html(`<div class="alert alert-danger">${response.message}</div>`);
+                responseMessage.html(`<div class="modern-alert modern-alert-danger" style="position: absolute;">${response.message}</div>`);
               }
             },
             error: function () {
-              $('#responseMessage').html('<div class="alert alert-danger">An error occurred while processing your request.</div>');
+              $('#responseMessage').html('<div class="modern-alert modern-alert-danger" style="position: absolute;">An error occurred while processing your request.</div>');
             }
           });
+
+          setTimeout(() => {
+            $('.modern-alert').fadeOut(1000, function () {
+              $(this).remove();
+            });
+          }, 1000);
         });
+
+        function detectNumber(event) {
+            // Get the key code (which is a number representing the key pressed)
+            const keyCode = event.keyCode || event.which; // Compatibility for old browsers
+
+            // Check if the key is a number (0-9)
+            if (keyCode >= 48 && keyCode <= 57) {
+                $('#studentID').focus();
+            } else {
+
+            }
+        }
+
+        // Add event listener for keydown or keypress event
+        document.addEventListener('keydown', detectNumber);
+
+        
       });
     </script>
 </body>
