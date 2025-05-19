@@ -18,65 +18,6 @@ if($isAdmin != true) {
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load("current", {packages:["corechart"]});
-      google.charts.setOnLoadCallback(drawCharts);
-
-      function drawCharts() {
-        // Data for the first chart
-        var data1 = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Eat',      2],
-          ['Commute',  2],
-          ['Watch TV', 2],
-          ['Sleep',    7]
-        ]);
-
-        // Options for the first chart
-        var options1 = {
-          title: '',
-          titleTextStyle: {
-          fontSize: 16,
-          bold: true,
-          color: '#333'
-        },
-          titleAlignment: 'center',
-          pieHole: 0.5,
-          chartArea: { left: 50, bottom: 0, top: 0, width: '100%', height: '75%' },
-          backgroundColor: 'transparent'
-        };
-
-        // Render the first chart
-        var chart1 = new google.visualization.PieChart(document.getElementById('idChart'));
-        chart1.draw(data1, options1);
-
-        // Data for the second chart
-        var data2 = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     8],
-          ['Eat',      3],
-          ['Commute',  3],
-          ['Watch TV', 4],
-          ['Sleep',    6]
-        ]);
-
-        // Options for the second chart
-        var options2 = {
-          title: '',
-            titleTextStyle: {
-            fontSize: 16,
-            bold: true,
-            color: '#333'
-          },
-          titleAlignment: 'center',
-          pieHole: 0.5,
-          chartArea: { left: 50, bottom: 0, top: 0,  width: '100%', height: '75%' },
-          backgroundColor: 'transparent'
-        };
-
-        // Render the second chart
-        var chart2 = new google.visualization.PieChart(document.getElementById('uniformChart'));
-        chart2.draw(data2, options2);
-      }
     </script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -84,6 +25,24 @@ if($isAdmin != true) {
   </head>
 
 <body>
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Do you really want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="../php-api/logout.php" class="btn btn-danger" style="background-color: #0D67a1; border-color: #0D67A1;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="sidebar">
         <!-- Hamburger Button -->
@@ -99,30 +58,13 @@ if($isAdmin != true) {
                 <i class="bi bi-person-plus" style="color: #0D67A1; font-size: 24px;"></i> Student Registration
             </a>
             <a href="control_panel.php"><i class="bi bi bi-card-list" style="color: #0D67A1; font-size: 24px;"></i> Control Panel</a>
-            <!-- Logout Button -->
-            <!-- <button type="button" class="btn btn-danger mt-auto" data-bs-toggle="modal" data-bs-target="#logoutModal" style="margin-top: auto; background-color: #0D67A1; border-color: #0D67A1;">
-                Logout
-            </button> -->
-
-            <!-- Logout Confirmation Modal -->
-            <!-- <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Do you really want to log out?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <a href="../php-api/logout.php" class="btn btn-danger" style="background-color: #0D67a1; border-color: #0D67A1;">Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            
+            <!-- `Logout` Button -->
+            <div class="logout-button-wrapper">
+                <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#logoutModal"
+                    style="background-color: #0D67A1; border-color: #0D67A1;">
+                    Logout
+                </button>
+            </div>
         </div>
     </div>
 
@@ -137,7 +79,7 @@ if($isAdmin != true) {
 
         <!-- Title with dropdown filter -->
         <div class="d-flex justify-content-between align-items-center flex-wrap mx-3 mt-3">
-            <h4 class="roboto-medium fs-3 mb-2" style="color: #0D67A1">Annual Summary</h4>
+            <h4 class="roboto-medium fs-3 mb-2" style="color: #0D67A1" id="textSummary">Yearly Summary</h4>
             <select id="periodSelect" class="form-select w-auto" style="max-width: 200px;">
                 <option value="yearly" selected>Yearly</option>
                 <option value="monthly">Monthly</option>
@@ -172,7 +114,7 @@ if($isAdmin != true) {
             </div>
         </div>
 
-      <!-- <h4 class="m-3 mx-3 roboto-medium fs-3" style="color: #0D67A1">Monthly Summary</h4>
+      <h4 class="m-3 mx-3 roboto-medium fs-3" style="color: #0D67A1"><hr/></h4>
 
       <div class="row mx-3 g-5">
         <div class="col-sm-6">
@@ -181,7 +123,7 @@ if($isAdmin != true) {
             <div class="chart-title mt-2" style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px;">
               No. of Students without ID
             </div>
-            <div id="idChart" style="width: 34rem; height: 45vh; background-color: #f5f5f5;"></div>
+            <div class="chart-container" id="idChart"></div>
             </div>
           </div>
         </div>
@@ -191,11 +133,11 @@ if($isAdmin != true) {
             <div class="chart-title mt-2" style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px;">
               No. of Students without Uniform
             </div>
-            <div id="uniformChart" style="width: 34rem; height: 45vh; background-color: #f5f5f5;"></div>      
+            <div class="chart-container" id="uniformChart"></div>      
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
         
     </div>
 
@@ -259,6 +201,95 @@ if($isAdmin != true) {
             });
         };
 
+        const chartRun = () => {
+            $.ajax({
+                url: '../php-api/ReadProgramsAndTotalViolations.php',
+                method: 'GET',
+                dataType: 'json',
+                data: { type: 'WithoutUniform,WithoutID', period: $('#periodSelect').val() },
+                success: (response) => {
+                    const responseData_WithoutUniform = response.data?.WithoutUniform || {};
+                    const responseData_WithoutID = response.data?.WithoutID || {};
+
+                    google.charts.setOnLoadCallback(() => {
+                        // Chart 1: Students without ID
+                        let chartDataID = [['Program Code', 'Total Violations']];
+                        let hasIDData = false;
+
+                        for (const programCode in responseData_WithoutID) {
+                            if (Object.hasOwnProperty.call(responseData_WithoutID, programCode)) {
+                                const program = responseData_WithoutID[programCode];
+                                const count = parseInt(program.TotalViolations);
+                                if (count > 0) {
+                                    chartDataID.push([`${programCode} - ${count}`, count]);
+                                    hasIDData = true;
+                                }
+                            }
+                        }
+
+                        const dataID = google.visualization.arrayToDataTable(chartDataID);
+                        const optionsID = {
+                            pieHole: 0.5,
+                            chartArea: { left: 0, width: '100%', height: '75%' },
+                            backgroundColor: 'transparent',
+                            pieSliceText: 'value',
+                            tooltip: { trigger: 'focus' },
+                            legend: { position: 'right', textStyle: { fontSize: 12 } }
+                        };
+
+                        const chart1 = new google.visualization.PieChart(document.getElementById('idChart'));
+                        if (hasIDData) {
+                            chart1.draw(dataID, optionsID);
+                        } else {
+                            document.getElementById('idChart').innerHTML = '<p class="text-center text-sm text-gray-500">No data available for selected period.</p>';
+                        }
+
+                        // Chart 2: Students without Uniform
+                        let chartDataUniform = [['Program Code', 'Total Violations']];
+                        let hasUniformData = false;
+
+                        for (const programCode in responseData_WithoutUniform) {
+                            if (Object.hasOwnProperty.call(responseData_WithoutUniform, programCode)) {
+                                const program = responseData_WithoutUniform[programCode];
+                                const count = parseInt(program.TotalViolations);
+                                if (count > 0) {
+                                    chartDataUniform.push([`${programCode} - ${count}`, count]);
+                                    hasUniformData = true;
+                                }
+                            }
+                        }
+
+                        const dataUniform = google.visualization.arrayToDataTable(chartDataUniform);
+                        const optionsUniform = {
+                            pieHole: 0.5,
+                            chartArea: { left: 0, width: '100%', height: '75%' },
+                            backgroundColor: 'transparent',
+                            pieSliceText: 'value',
+                            tooltip: { trigger: 'focus' },
+                            legend: { position: 'right', textStyle: { fontSize: 12 } }
+                        };
+
+                        const chart2 = new google.visualization.PieChart(document.getElementById('uniformChart'));
+                        if (hasUniformData) {
+                            chart2.draw(dataUniform, optionsUniform);
+                        } else {
+                            document.getElementById('uniformChart').innerHTML = '<p class="text-center text-sm text-gray-500">No data available for selected period.</p>';
+                        }
+                    });
+                },
+                error: (xhr, status, error) => {
+                    console.error('AJAX Error:', error);
+                    document.getElementById('idChart').innerHTML = '<p class="text-center text-red-500">Error loading data.</p>';
+                    document.getElementById('uniformChart').innerHTML = '<p class="text-center text-red-500">Error loading data.</p>';
+                }
+            });
+        };
+
+
+
+        chartRun();
+        
+
         const fetchViolationTotals = (period) => {
             $.ajax({
                 url: '../php-api/ReadViolationTotals.php',
@@ -278,8 +309,10 @@ if($isAdmin != true) {
 
         $('#periodSelect').on('change', function () {
             const period = this.value;
+            $('#textSummary').text(period.charAt(0).toUpperCase() + period.slice(1) + ' Summary');
             fetchSectionWithMostViolations(period);
             fetchViolationTotals(period);
+            chartRun();
         });
       
         fetchSectionWithMostViolations($('#periodSelect').val());
