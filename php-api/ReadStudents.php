@@ -57,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             Program.ProgramCode,
             COALESCE(COUNT(DailyRecords.RecordID), 0) AS TotalViolations,
             SUM(CASE WHEN DailyRecords.ViolationType LIKE '%WithoutUniform%' THEN 1 ELSE 0 END) AS WithoutUniformCount,
-            SUM(CASE WHEN DailyRecords.ViolationType LIKE '%WithoutID%' THEN 1 ELSE 0 END) AS WithoutIDCount
+            SUM(CASE WHEN DailyRecords.ViolationType LIKE '%WithoutID%' THEN 1 ELSE 0 END) AS WithoutIDCount,
+            SUM(CASE WHEN DailyRecords.Attendance = 1 THEN 1 ELSE 0 END) AS AttendanceTotal
+
         FROM Students
         LEFT JOIN DailyRecords ON Students.StudentID = DailyRecords.StudentID AND DailyRecords.Violated = TRUE
         LEFT JOIN Program ON Students.ProgramID = Program.ProgramID

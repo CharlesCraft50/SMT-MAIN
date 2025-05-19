@@ -14,79 +14,8 @@ if($isAdmin != true) {
     <title>Dashboard</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        /* Your existing CSS styles */
-        body {
-            font-family: "Roboto", sans-serif;
-            margin: 0;
-            display: flex;
-            background-color: #f4f4f4;
-        }
-
-        .sidebar {
-            width: 290px !important;
-            max-width: 240px !important;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-        }
-
-        .sidebar h2 {
-            margin: 0;
-            color: #007BFF;
-        }
-
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #e7f3fe;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            background-color: #fff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-
-        .blue__bar {
-            background-color: #0D67A1;
-            width: 100%;
-            padding: 20px;
-            padding-bottom: 15px;
-            color: white;
-        }
-
-        .yellow__bar {
-            background-color: #FFF200;
-            width: 100%;
-            height: 2vh;
-        }
-
-        .content-area {
-            display: flex;
-            margin-top: 20px;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
-
         .student-table {
             flex: 3;
             margin-right: 20px;
@@ -230,26 +159,8 @@ if($isAdmin != true) {
             flex: 1;
         }
 
-        .hamburger-button {
-            background-color: #0D67A1;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            outline: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
         .rfidForm {
             display: none;
-        }
-
-        .hamburger-button:hover {
-            background-color: #095386;
         }
 
         @media (max-width: 768px) {
@@ -271,15 +182,13 @@ if($isAdmin != true) {
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../assets/admin.css">
 </head>
 
 <body>
-
+    
     <div class="sidebar">
-        <!-- Hamburger Button -->
-        <button class="hamburger-button">
-            <i class="bi bi-list"></i>
-        </button>
+        
         <hr>
         <div class="sidebar-content">
             <a href="dashboard.php"><i class="bi bi-grid" style="color: #0D67A1; font-size: 24px;"></i> Dashboard</a>
@@ -288,13 +197,14 @@ if($isAdmin != true) {
             <a href="violations.php" id="addStudentNav" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                 <i class="bi bi-person-plus" style="color: #0D67A1; font-size: 24px;"></i> Student Registration
             </a>
+            <a href="control_panel.php"><i class="bi bi bi-card-list" style="color: #0D67A1; font-size: 24px;"></i> Control Panel</a>
             <!-- Logout Button -->
-            <button type="button" class="btn btn-danger mt-auto" data-bs-toggle="modal" data-bs-target="#logoutModal" style="margin-top: auto; background-color: #0D67A1; border-color: #0D67A1;">
+            <!-- <button type="button" class="btn btn-danger mt-auto" data-bs-toggle="modal" data-bs-target="#logoutModal" style="margin-top: auto; background-color: #0D67A1; border-color: #0D67A1;">
                 Logout
-            </button>
+            </button> -->
 
             <!-- Logout Confirmation Modal -->
-            <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <!-- <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -310,11 +220,18 @@ if($isAdmin != true) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+            
         </div>
     </div>
 
+    <!-- Hamburger Button -->
+    <button class="hamburger-button">
+        <i class="bi bi-list"></i>
+    </button>
+
     <div class="main-content">
+        <div id="responseMessage" class="modern-alert" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000;"></div>
         <div class="header">
             <div class="blue__bar">
                 <h2>Student List</h2>
@@ -339,6 +256,7 @@ if($isAdmin != true) {
                             <th>Student Name</th>
                             <th>Year/Program</th>
                             <th>RFID Status</th>
+                            <th>Attendance</th>
                         </tr>
                     </thead>
                     <tbody class="student-table-body">
@@ -416,20 +334,6 @@ if($isAdmin != true) {
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-      let showSideBar = true;
-
-      $('.hamburger-button').click(function () {
-          showSideBar = !showSideBar;
-
-          if (!showSideBar) {
-              $('.sidebar').animate({ width: '90px' });
-              $('.sidebar-content').hide();
-          } else {
-              $('.sidebar').animate({ width: '290px' });
-              $('.sidebar-content').show();
-          }
-      });
-
       $('#searchButton').click(function () {
           fetchStudentData();
       });
@@ -459,11 +363,13 @@ if($isAdmin != true) {
                           data-without-uniform="${student.WithoutUniformCount}" 
                           data-without-id="${student.WithoutIDCount}"
                           data-rfid-status="${student.RFIDStatus}"
-                          data-rfid="${student.RFID}">
+                          data-rfid="${student.RFID}" 
+                          data-attendance="${student.AttendanceTotal}">
                           <td>${student.StudentID}</td>
                           <td>${student.StudentName}</td>
                           <td>${student.YearLevel} Year / ${student.ProgramCode}</td>
                           <td>${student.RFIDStatus}</td>
+                          <td>${student.AttendanceTotal}</td>
                       </tr>`;
 
                   tableBody.append(row);
@@ -545,39 +451,6 @@ if($isAdmin != true) {
           });
       }
 
-      function fetchPrograms() {
-        $.ajax({
-            url: '../php-api/ReadPrograms.php',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    const programDropdown = $('#studentProgram');
-                    programDropdown.empty().append('<option value="">Select Program</option>');
-
-                    for (const category in response.data) {
-                        if (response.data.hasOwnProperty(category)) {
-                            const optgroup = $('<optgroup>').attr('label', category);
-                            
-                            response.data[category].forEach(function(program) {
-                                optgroup.append(
-                                    `<option value="${program.ProgramID}">${program.ProgramName}</option>`
-                                );
-                            });
-
-                            programDropdown.append(optgroup);
-                        }
-                    }
-                } else {
-                    console.error('Error fetching programs:', response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', error);
-            }
-        });
-    }
-
         var studentID_GLOBAL = "";
         var studentName_GLOBAL = "";
         var year_GLOBAL = "";
@@ -614,47 +487,6 @@ if($isAdmin != true) {
         $('#submitStudentRFID input:first').focus();
       });
 
-      $('#addStudentModal').on('show.bs.modal', function () {
-        fetchPrograms();
-      });
-
-      $('#addStudentForm').submit(function(e) {
-        e.preventDefault();
-
-        const formData = {
-          studentID: $('#studentNo').val(),
-          studentName: $('#studentName').val(),
-          year: $('#studentYear').val(),
-          programID: $('#studentProgram').val()
-        };
-
-        $.ajax({
-            url: '../php-api/CreateStudent.php',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function(response) {
-                var jsonResponse = JSON.parse(response);
-                if (jsonResponse.status === 'success') {
-                    alert(jsonResponse.message);
-                    $('#studentNo').val('');
-                    $('#studentName').val('');
-                    $('#studentYear').val('');
-                    $('#studentProgram').val('');
-                    fetchStudentData();
-                } else {
-                    alert(jsonResponse.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-
-        
-
-    });
-
     $('#submitStudentRFID').submit(function(e) {
         e.preventDefault();
 
@@ -674,7 +506,7 @@ if($isAdmin != true) {
             success: function(response) {
                 var jsonResponse = typeof response === 'string' ? JSON.parse(response) : response;
                 if (jsonResponse.status === 'success') {
-                    alert(jsonResponse.message);
+                    showResponseMessage('#responseMessage', jsonResponse.message, 'success');
                     $('#studentNo').val('');
                     $('#studentName').val('');
                     $('#studentYear').val('');
@@ -684,7 +516,7 @@ if($isAdmin != true) {
                     $('#studentRFID').val('');
                     $('#show_rfid-area').click();
                 } else {
-                    alert(jsonResponse.message);
+                    showResponseMessage('#responseMessage', jsonResponse.message, 'danger');
                     console.log(formDataRFID);
                     $('#studentRFID').val('');
                 }
@@ -692,7 +524,7 @@ if($isAdmin != true) {
                 
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);
+                showResponseMessage('#responseMessage', 'Error: ' + error, 'danger');
                 $('#studentRFID').val('');
                 $('#show_rfid-area').click();
             }
@@ -717,4 +549,5 @@ if($isAdmin != true) {
 
 
 </script>
+<script src="../js/admin.js"></script>
 </html>

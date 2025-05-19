@@ -16,76 +16,6 @@ if($isAdmin != true) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        /* Your existing CSS styles */
-        body {
-            font-family: "Roboto", sans-serif;
-            margin: 0;
-            display: flex;
-            background-color: #f4f4f4;
-        }
-
-        .sidebar {
-            width: 290px;
-            max-width: 240px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-        }
-
-        .sidebar h2 {
-            margin: 0;
-            color: #007BFF;
-        }
-
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #e7f3fe;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            background-color: #fff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-
-        .blue__bar {
-            background-color: #0D67A1;
-            width: 100%;
-            padding: 20px;
-            padding-bottom: 15px;
-            color: white;
-        }
-
-        .yellow__bar {
-            background-color: #FFF200;
-            width: 100%;
-            height: 2vh;
-        }
-
-        .content-area {
-            display: flex;
-            margin-top: 20px;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
-
         .violation-table {
             flex: 3;
             margin-right: 20px;
@@ -280,6 +210,7 @@ if($isAdmin != true) {
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../assets/admin.css">
 </head>
 
 <body>
@@ -297,13 +228,14 @@ if($isAdmin != true) {
             <a href="violations.php" id="addStudentNav" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                 <i class="bi bi-person-plus" style="color: #0D67A1; font-size: 24px;"></i> Student Registration
             </a>
+            <a href="control_panel.php"><i class="bi bi bi-card-list" style="color: #0D67A1; font-size: 24px;"></i> Control Panel</a>
             <!-- Logout Button -->
-            <button type="button" class="btn btn-danger mt-auto" data-bs-toggle="modal" data-bs-target="#logoutModal" style="margin-top: auto; background-color: #0D67A1; border-color: #0D67A1;">
+            <!-- <button type="button" class="btn btn-danger mt-auto" data-bs-toggle="modal" data-bs-target="#logoutModal" style="margin-top: auto; background-color: #0D67A1; border-color: #0D67A1;">
                 Logout
-            </button>
+            </button> -->
 
             <!-- Logout Confirmation Modal -->
-            <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <!-- <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -319,11 +251,13 @@ if($isAdmin != true) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+            
         </div>
     </div>
 
     <div class="main-content">
+        <div id="responseMessage" class="modern-alert" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000;"></div>
         <div class="header">
             <div class="blue__bar">
                 <h2>Violation Records</h2>
@@ -512,19 +446,6 @@ if($isAdmin != true) {
 </body>
 <script type="text/javascript">
     $(document).ready(function () {
-      let showSideBar = true;
-
-      $('.hamburger-button').click(function () {
-          showSideBar = !showSideBar;
-
-          if (!showSideBar) {
-              $('.sidebar').animate({ width: '90px' });
-              $('.sidebar-content').hide();
-          } else {
-              $('.sidebar').animate({ width: '290px' });
-              $('.sidebar-content').show();
-          }
-      });
 
       $('#searchButton').click(function () {
           fetchViolationsData();
@@ -637,39 +558,6 @@ if($isAdmin != true) {
           });
       }
 
-      function fetchPrograms() {
-        $.ajax({
-            url: '../php-api/ReadPrograms.php',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.status === 'success') {
-                    const programDropdown = $('#studentProgram');
-                    programDropdown.empty().append('<option value="">Select Program</option>');
-
-                    for (const category in response.data) {
-                        if (response.data.hasOwnProperty(category)) {
-                            const optgroup = $('<optgroup>').attr('label', category);
-                            
-                            response.data[category].forEach(function(program) {
-                                optgroup.append(
-                                    `<option value="${program.ProgramID}">${program.ProgramName}</option>`
-                                );
-                            });
-
-                            programDropdown.append(optgroup);
-                        }
-                    }
-                } else {
-                    console.error('Error fetching programs:', response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', error);
-            }
-        });
-    }
-
        // Click event to fetch violations and display them in a modal
     $('table.violation-table').on('click', 'tr', function() {
         var studentID = $(this).data('id'); // Get the student ID from the clicked row
@@ -747,11 +635,11 @@ if($isAdmin != true) {
                     // Show the modal
                     $('#violationDetailsModal').modal('show');
                 } else {
-                    alert('Failed to fetch violation details: ' + response.message);
+                    showResponseMessage('#responseMessage', 'Failed to fetch violation details: ' + response.message, 'danger');
                 }
             },
             error: function() {
-                alert('Error fetching violation details.');
+                showResponseMessage('#responseMessage', 'Error fetching violation details.', 'danger');
             }
         });
     });
@@ -838,11 +726,11 @@ if($isAdmin != true) {
                         </div>
                     `);
                 } else {
-                    alert('Failed to save changes: ' + response.message);
+                    showResponseMessage('#responseMessage', 'Failed to save changes: ' + response.message, 'danger');
                 }
             },
             error: function() {
-                alert('Error saving violation changes.');
+                showResponseMessage('#responseMessage', 'Error saving violation changes.', 'danger');
             }
         });
     }
@@ -858,13 +746,13 @@ if($isAdmin != true) {
                 success: function(response) {
                     if (response.status === 'success') {
                         $(button).closest('tr').remove();
-                        alert('Violation deleted successfully.');
+                        showResponseMessage('#responseMessage', 'Violation deleted successfully.', 'success');
                     } else {
-                        alert('Failed to delete violation: ' + response.message);
+                        showResponseMessage('#responseMessage', 'Failed to delete violation: ' + response.message, 'danger');
                     }
                 },
                 error: function() {
-                    alert('Error deleting violation.');
+                    showResponseMessage('#responseMessage', 'Error deleting violation.', 'danger');
                 }
             });
         }
@@ -914,8 +802,8 @@ if($isAdmin != true) {
         var notes = row.find('#newNotesInput').val();
         var status = 'Pending';
 
-        if (!violationDate || !notes.trim()) {
-            alert('Please fill out all fields.');
+        if (!violationDate) {
+            showResponseMessage('#responseMessage', 'Please fill out all fields.', 'danger');
             return;
         }
 
@@ -944,11 +832,11 @@ if($isAdmin != true) {
                         </div>
                     `);
                 } else {
-                    alert('Failed to add violation: ' + response.message);
+                    showResponseMessage('#responseMessage', 'Failed to add violation: ' + response.message, 'danger');
                 }
             },
             error: function () {
-                alert('Error adding new violation.');
+                showResponseMessage('#responseMessage', 'Error adding new violation.', 'danger');
             }
         });
     };
@@ -983,7 +871,7 @@ if($isAdmin != true) {
                     });
                 },
                 error: function() {
-                    alert('Error fetching students.');
+                    showResponseMessage('#responseMessage', 'Error fetching students.', 'danger');
                 }
             });
         } else {
@@ -1036,16 +924,16 @@ if($isAdmin != true) {
             contentType: false,
             success: function(response) {
                 if (response.status === 'success') {
-                    alert('Violation added successfully.');
+                    showResponseMessage('#responseMessage', 'Violation added successfully.', 'success');
                     $('#addViolationModal').modal('hide');
                     fetchViolationsData();
                 } else {
-                    alert('Error: ' + response.message);
+                    showResponseMessage('#responseMessage', 'Error: ' + response.message, danger);
                     console.log(response.message);
                 }
             },
             error: function() {
-                alert('Error saving violation.');
+                showResponseMessage('#responseMessage', 'Error saving violation.', 'danger');
             }
         });
     });
@@ -1056,47 +944,8 @@ if($isAdmin != true) {
         document.getElementById('violationDateInput').value = formattedDateTime;
     }
 
-    $('#addStudentModal').on('show.bs.modal', function () {
-        fetchPrograms();
-      });
-
-      $('#addStudentForm').submit(function(e) {
-        e.preventDefault();
-
-        const formData = {
-          studentID: $('#studentNo').val(),
-          studentName: $('#studentName').val(),
-          year: $('#studentYear').val(),
-          programID: $('#studentProgram').val()
-        };
-
-        $.ajax({
-            url: '../php-api/CreateStudent.php',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function(response) {
-                var jsonResponse = JSON.parse(response);
-                if (jsonResponse.status === 'success') {
-                    alert(jsonResponse.message);
-                    $('#studentNo').val('');
-                    $('#studentName').val('');
-                    $('#studentYear').val('');
-                    $('#studentProgram').val('');
-                    fetchStudentData();
-                } else {
-                    alert(jsonResponse.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-
   });
-
-
 </script>
+
+<script src="../js/admin.js"></script>
 </html>

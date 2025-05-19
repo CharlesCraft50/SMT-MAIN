@@ -175,11 +175,24 @@ if (!isset($_SESSION['student'])) {
                 </div>
             </div>
 
-            <!-- Button Section -->
-            <button type="button" id="nextBtn" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="height: auto; width: auto; background-color: #0D67A1;">
-                <span class="fs-1"style="margin-right: 0.5rem; color: #D9F0FF;">NEXT</span>
-                <i class="bi bi-box-arrow-in-right fs-1" style="color: #D9F0FF;"></i>
-            </button>
+            <div class="content-area d-flex flex-column align-items-center justify-content-center text-align-center me-5" style="width: 40rem;">
+                <div class="student-info-area text-align-center w-100">
+                    <h1 style="text-align: center; margin-bottom: 2rem;">Violations</h1>
+                    <div class="d-flex align-items-center mb-4 p-3" 
+                        style="background-color: #D9F0FF; border-radius: 10px; width: 100%;">
+                        <strong class="fs-2 student-info-display" style="flex: 1; text-align: left;" id="totalViolationsText">Total Violations:</strong>
+                        <p class="fs-1 student-info-display mb-0" style="flex: 1; text-align: right;" id="studentTotalViolations"></p>
+                    </div>
+                
+                    <!-- Button Section -->
+                    <button type="button" id="nextBtn" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="height: auto; width: auto; background-color: #D9F0FF;">
+                        <span class="fs-1"style="margin-right: 0.5rem; color: #0D67A1;">NEXT</span>
+                        <i class="bi bi-box-arrow-in-right fs-1" style="color: #0D67A1;"></i>
+                    </button>
+                </div>
+            </div>
+
+            
         </div>
 
     
@@ -198,7 +211,7 @@ if (!isset($_SESSION['student'])) {
         // Trigger click after 1 second
         setTimeout(() => {
             nextBtn.click();
-        }, 500);
+        }, 1000);
     });
 </script>
 <script type="text/javascript">
@@ -219,6 +232,10 @@ $(document).ready(function(){
               $('#studentNameDisplay').text(student.StudentName);
               $('#studentYearDisplay').text(student.Year);
               $('#studentCourseDisplay').text(student.ProgramCode);
+              $('#studentTotalViolations').text(response.violationCount);
+              if(response.violationCount >= 1) {
+                $('#totalViolationsText').text('Total Violation:');
+              }
 
               // Clear previous violations
               $('#violationDetailsTableBody').empty();

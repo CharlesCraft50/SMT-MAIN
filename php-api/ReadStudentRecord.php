@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit();
     }
 
-    // SQL query using your actual table names and structure
+    // SQL query to fetch student and violations
     $sql = "SELECT 
                 s.StudentID,
                 s.StudentName,
@@ -54,9 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             ];
 
             $violations = [];
+            $violationCount = 0;
 
             foreach ($results as $row) {
                 if ($row['ViolationID']) {
+                    $violationCount++; // Count each valid violation
                     $violations[] = [
                         'ViolationID' => $row['ViolationID'],
                         'ViolationType' => $row['ViolationType'],
@@ -71,11 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'status' => 'success',
                 'message' => 'Student and violation data fetched.',
                 'student' => $studentInfo,
+                'violationCount' => $violationCount,
                 'violations' => $violations
             ];
         } else {
             // Student may exist but no violations
-            // Re-query student without join to get basic info
             $stmt = $conn->prepare("SELECT s.StudentID, s.StudentName, s.YearLevel AS Year, s.ProgramID, p.ProgramName, p.ProgramCode
                                     FROM Students s
                                     LEFT JOIN Program p ON s.ProgramID = p.ProgramID
@@ -89,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     'status' => 'success',
                     'message' => 'Student found but no violations.',
                     'student' => $student,
+                    'violationCount' => 0,
                     'violations' => []
                 ];
             } else {

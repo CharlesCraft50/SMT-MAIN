@@ -56,6 +56,8 @@ CREATE TABLE DailyRecords (
   StudentID INT NOT NULL,
   ViolationDate DATE NOT NULL,
   Attendance BOOLEAN NOT NULL,
+  TimeIn DATETIME,
+  TimeOut DATETIME,
   Violated BOOLEAN NOT NULL,
   ViolationType VARCHAR(100),
   Notes VARCHAR(255),
@@ -80,3 +82,21 @@ CREATE TABLE StudentArchive (
   PRIMARY KEY (ArchiveID),
   FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+CREATE TABLE ExceptionDays (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    StartDate DATE NULL,
+    EndDate DATE NULL,
+    Weekday VARCHAR(10) NULL,
+
+    Description VARCHAR(255) NULL,
+
+    -- Prevent duplicate Weekday exceptions
+    UNIQUE (Weekday),
+
+    -- Prevent duplicate single-date exceptions
+    UNIQUE (StartDate, EndDate)
+);

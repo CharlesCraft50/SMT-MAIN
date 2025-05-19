@@ -1,21 +1,25 @@
 <?php
-session_start();
+    session_start();
 
-// Ensure the user is a logged-in student
-if (!isset($_SESSION['student'])) {
-    http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'No student session found.']);
-    exit();
-}
+    if (!isset($_SESSION['student'])) {
+        http_response_code(403);
+        echo json_encode(['status' => 'error', 'message' => 'No student session found.']);
+        exit();
+    }
 
-require('connect.php');
+    require('connect.php');
 
-// Initialize response
-$response = [];
+    header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
-    $studentID = $_SESSION['student']['StudentID'];
-    $studentName = $_SESSION['student']['StudentName'];
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
+        http_response_code(405);
+        echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Invalid request method or missing file.']);
+        exit();
+    }
+
+    $student = $_SESSION['student'];
+    $studentID = $student['StudentID'];
+    $studentName = str_replace(' ', '_', $student['StudentName']);
     $uniformStatus = filter_input(INPUT_POST, 'uniformStatus', FILTER_VALIDATE_INT);
 
     if ($uniformStatus === null || $uniformStatus === false) {
@@ -26,116 +30,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
 
     $file = $_FILES['file'];
     $violationDate = date('Y-m-d');
-
-    // Unique file name
-    $fileName = $studentID . '_' . $violationDate . '.jpg';
-    $studentFolderName = str_replace(' ', '_', $studentName);
-
-    // Set base and target folder paths
+    $fileName = "{$studentID}_{$violationDate}.jpg";
     $baseFolder = __DIR__ . '/content';
-    if ($uniformStatus === 1) {
-        $folder = $baseFolder . '/uniform/' . $studentFolderName;
-        $dbFilePath = 'content/uniform/' . $studentFolderName . '/' . $fileName;
-    } else {
-        $folder = $baseFolder . '/not_wearing_uniform/' . $studentFolderName;
-        $dbFilePath = 'content/not_wearing_uniform/' . $studentFolderName . '/' . $fileName;
+    $folder = $baseFolder . ($uniformStatus === 1 ? '/uniform/' : '/not_wearing_uniform/') . $studentName;
+    $dbFilePath = "content" . ($uniformStatus === 1 ? '/uniform/' : '/not_wearing_uniform/') . $studentName . '/' . $fileName;
+
+    // Create directory if not exists
+    if (!is_dir($folder) && !mkdir($folder, 0777, true)) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => "Failed to create folder: $folder"]);
+        exit();
     }
 
-    // Ensure directory exists
-    if (!file_exists($folder)) {
-        if (!mkdir($folder, 0777, true) && !is_dir($folder)) {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Failed to create folder: ' . $folder]);
-            exit();
-        }
+    $filePath = "$folder/$fileName";
+    if (file_exists($filePath)) unlink($filePath);
+
+    if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Failed to upload image.']);
+        exit();
     }
 
-    $filePath = $folder . '/' . $fileName;
+    try {
+        // Check for existing record today
+        $stmt = $conn->prepare("SELECT RecordID, Attendance, TimeIn, TimeOut FROM DailyRecords 
+                                WHERE StudentID = :StudentID AND ViolationDate = :ViolationDate LIMIT 1");
+        $stmt->execute([':StudentID' => $studentID, ':ViolationDate' => $violationDate]);
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (file_exists($filePath)) {
-        unlink($filePath); // delete the old photo
-    }
+        if ($record) {
+            if ($record['Attendance'] == 1 && empty($record['TimeOut'])) {
+                $minutesElapsed = (time() - strtotime($record['TimeIn'])) / 60;
 
-    // Move uploaded file
-    if (move_uploaded_file($file['tmp_name'], $filePath)) {
-        try {
-            // Check if today's record already exists
-            $checkSql = "SELECT COUNT(*) FROM DailyRecords WHERE StudentID = :StudentID AND ViolationDate = :ViolationDate";
-            $checkStmt = $conn->prepare($checkSql);
-            $checkStmt->bindParam(':StudentID', $studentID, PDO::PARAM_INT);
-            $checkStmt->bindParam(':ViolationDate', $violationDate, PDO::PARAM_STR);
-            $checkStmt->execute();
-            $recordExists = $checkStmt->fetchColumn();
+                if ($minutesElapsed >= 1) {
+                    $timeOut = date('Y-m-d H:i:s');
+                    $update = $conn->prepare("UPDATE DailyRecords 
+                                            SET TimeOut = :TimeOut, ViolationStatus = 'Timed Out' 
+                                            WHERE RecordID = :RecordID");
+                    $update->execute([':TimeOut' => $timeOut, ':RecordID' => $record['RecordID']]);
 
-            if ($recordExists) {
-                // Return duplicate status but still allow image saving
-                $response = [
-                    'status' => 'duplicate',
-                    'message' => '🚫 Attended already!',
-                    'imageSaved' => true,
-                    'filePath' => $dbFilePath
-                ];
-            } else {
-                // Prepare violation info
-                $violationType = $uniformStatus === 1 ? '' : 'WithoutUniform';
-                $violateAttendance = 1;
-                $violateViolated = ($uniformStatus === 1) ? 0 : 1;
-                $violationStatus = 'Pending';
-                $notes = '';
-
-                // Insert record
-                $sql = "INSERT INTO DailyRecords (
-                            StudentID, ViolationType, ViolationDate, Attendance, 
-                            Violated, Notes, ViolationPicture, ViolationStatus
-                        ) VALUES (
-                            :StudentID, :ViolationType, :ViolationDate, :Attendance, 
-                            :Violated, :Notes, :ViolationPicture, :ViolationStatus
-                        )";
-
-                $stmt = $conn->prepare($sql);
-                $stmt->bindParam(':StudentID', $studentID, PDO::PARAM_INT);
-                $stmt->bindParam(':ViolationType', $violationType, PDO::PARAM_STR);
-                $stmt->bindParam(':ViolationDate', $violationDate, PDO::PARAM_STR);
-                $stmt->bindParam(':Attendance', $violateAttendance, PDO::PARAM_INT);
-                $stmt->bindParam(':Violated', $violateViolated, PDO::PARAM_INT);
-                $stmt->bindParam(':Notes', $notes, PDO::PARAM_STR);
-                $stmt->bindParam(':ViolationPicture', $dbFilePath, PDO::PARAM_STR);
-                $stmt->bindParam(':ViolationStatus', $violationStatus, PDO::PARAM_STR);
-
-                if ($stmt->execute()) {
-                  $response = [
-                        'status' => 'success',
-                        'level' => 'success',
-                        'message' => 'Photo saved and violation recorded.',
-                        'recordID' => $conn->lastInsertId()
-                    ];
-
-                  if($uniformStatus == 1) {
-                      $response['message'] = '✅ Wearing Uniform!';
-                      $response['level'] = 'success';
-                  } else {
-                      $response['message'] = '🚫 Not Wearing Uniform';
-                      $response['level'] = 'danger';
-                  }
-                    
-                } else {
-                    $response = ['status' => 'error', 'level' => 'danger', 'message' => 'Failed to insert record.'];
+                    echo json_encode([
+                        'status' => 'timeout',
+                        'level' => 'warning',
+                        'message' => '⏰ Timed Out!',
+                        'timeOut' => $timeOut
+                    ]);
+                    exit();
                 }
             }
-        } catch (PDOException $e) {
-            http_response_code(500);
-            $response = ['status' => 'error', 'level' => 'danger', 'message' => 'Database error: ' . $e->getMessage()];
-        }
-    } else {
-        http_response_code(500);
-        $response = ['status' => 'error', 'level' => 'danger', 'message' => 'Failed to upload image.'];
-    }
-} else {
-    http_response_code(405);
-    $response = ['status' => 'error', 'level' => 'danger', 'message' => 'Invalid request method or missing file.'];
-}
 
-// Output JSON response
-header('Content-Type: application/json');
-echo json_encode($response);
+            echo json_encode([
+                'status' => 'duplicate',
+                'message' => '🚫 Attended already!',
+                'imageSaved' => true,
+                'filePath' => $dbFilePath
+            ]);
+            exit();
+        }
+
+        // Insert new violation record
+        $violationType = $uniformStatus === 1 ? '' : 'WithoutUniform';
+        $data = [
+            ':StudentID' => $studentID,
+            ':ViolationType' => $violationType,
+            ':ViolationDate' => $violationDate,
+            ':Attendance' => 1,
+            ':TimeIn' => date('Y-m-d H:i:s'),
+            ':Violated' => $uniformStatus === 1 ? 0 : 1,
+            ':Notes' => '',
+            ':ViolationPicture' => $dbFilePath,
+            ':ViolationStatus' => 'Pending'
+        ];
+
+        $insert = $conn->prepare("INSERT INTO DailyRecords (
+            StudentID, ViolationType, ViolationDate, Attendance, TimeIn,
+            Violated, Notes, ViolationPicture, ViolationStatus
+        ) VALUES (
+            :StudentID, :ViolationType, :ViolationDate, :Attendance, :TimeIn,
+            :Violated, :Notes, :ViolationPicture, :ViolationStatus
+        )");
+
+        if ($insert->execute($data)) {
+            echo json_encode([
+                'status' => 'success',
+                'level' => $uniformStatus === 1 ? 'success' : 'danger',
+                'message' => $uniformStatus === 1 ? '✅ Wearing Uniform!' : '🚫 Not Wearing Uniform',
+                'recordID' => $conn->lastInsertId()
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Failed to insert record.']);
+        }
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Database error: ' . $e->getMessage()]);
+    }
 ?>
