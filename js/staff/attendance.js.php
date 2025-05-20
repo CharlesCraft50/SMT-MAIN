@@ -47,11 +47,11 @@
         };
 
         const goHome = () => {
-            // setTimeout(() => {
-            //     if(homeRedirect) {
-            //     window.location.href = "../staff";
-            //     }
-            // }, 1500);
+            setTimeout(() => {
+                if(homeRedirect) {
+                window.location.href = "../staff";
+                }
+            }, 1500);
         };
 
         const fetchExceptionDays = () => {
@@ -65,9 +65,6 @@
                     
                     if (!exceptionDay) {
 
-                        $('#camera-section').addClass('show').removeClass('shrink');
-$('.student-info-area').addClass('shrink');
-
                         if(attendanceStatus == "not_attended") {
                             startCameraButton.click();
                         } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
@@ -80,6 +77,8 @@ $('.student-info-area').addClass('shrink');
                             goHome();
                         }
                     } else {
+                        $('#camera-section').remove();
+                        
                         if(attendanceStatus == "auto_time_in") {
                             showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
                         } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
@@ -254,7 +253,10 @@ $('.student-info-area').addClass('shrink');
     
         fetchStudent();
 
-        startCamera();
+        if(!exceptionDay) {
+            startCamera();
+        }
+        
 
         fetchExceptionDays();
     });
