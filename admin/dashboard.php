@@ -92,7 +92,7 @@ if($isAdmin != true) {
             <div class="card text-center">
                 <div class="card-body">
                 <p class="card-text fs-5 p-3">Program with The Most Number of Violations</p>
-                <h2 class="card-title roboto-medium fs-2 fw-bold" id="mostSectionId">BSCS - 999</h2>
+                <h2 class="card-title roboto-medium fs-2 fw-bold" id="mostSectionId">BSCS - 0</h2>
                 </div>
             </div>
             </div>
@@ -100,7 +100,7 @@ if($isAdmin != true) {
             <div class="card text-center">
                 <div class="card-body">
                 <p class="card-text fs-5 p-3">Total Number of Students Without Uniform</p>
-                <h2 class="card-title roboto-medium fs-2 fw-bold" id="totalWithoutUniform">917</h2>
+                <h2 class="card-title roboto-medium fs-2 fw-bold" id="totalWithoutUniform">0</h2>
                 </div>
             </div>
             </div>
@@ -108,7 +108,7 @@ if($isAdmin != true) {
             <div class="card text-center">
                 <div class="card-body">
                 <p class="card-text fs-5 p-3">Total Number of Students Without ID</p>
-                <h2 class="card-title roboto-medium fs-2 fw-bold" id="totalWithoutId">881</h2>
+                <h2 class="card-title roboto-medium fs-2 fw-bold" id="totalWithoutId">0</h2>
                 </div>
             </div>
             </div>
