@@ -183,6 +183,13 @@ $(document).ready(function () {
                                 <td>${violation.Notes}</td>
                                 <td>${violation.ViolationStatus}</td>
                                 <td>
+                                    <img class="img-thumbnail violation-img" 
+                                        style="max-width: 80px; height: auto; cursor: pointer;" 
+                                        src="${imgUrl}" 
+                                        data-full="${imgUrl}" 
+                                        alt="Violation Image">
+                                </td>
+                                <td>
                                     <div class="inline-buttons">
                                         <button class="btn btn-warning" data-id="${violation.RecordID}" onclick="editViolation(this)">Update</button>
                                         <button class="btn btn-danger" data-id="${violation.RecordID}" onclick="deleteViolation(this)">&times;</button>
@@ -355,6 +362,13 @@ $(document).ready(function () {
                     <span id="newViolationStatus">Pending</span>
                 </td>
                 <td>
+                    <img class="img-thumbnail violation-img" 
+                        style="max-width: 80px; height: auto; cursor: pointer;" 
+                        src="" 
+                        data-full=""
+                        alt="Violation Image">
+                </td>
+                <td>
                     <div class="inline-buttons">
                         <button class="btn btn-success" onclick="saveNewViolation(this)">Save</button>
                         <button class="btn btn-danger" onclick="cancelNewViolation(this)">Cancel</button>
@@ -365,7 +379,6 @@ $(document).ready(function () {
         // Append the new row to the violations table body
         $('#violationDetailsTableBody').prepend(newViolationRow);
     });
-
 
     // Function to save the new violation
     window.saveNewViolation = (button) => {
@@ -399,7 +412,8 @@ $(document).ready(function () {
                     row.find('td').eq(1).text(formatDateForDisplay(violationDate));
                     row.find('td').eq(2).text(notes);
                     row.find('td').eq(3).text(status);
-                    row.find('td').eq(4).html(`
+                    row.find('td').eq(4).text(imageInput);
+                    row.find('td').eq(5).html(`
                         <div class="inline-buttons">
                             <button class="btn btn-warning" data-id="${response.recordID}" onclick="editViolation(this)">Update</button>
                             <button class="btn btn-danger" data-id="${response.recordID}" onclick="deleteViolation(this)">&times;</button>
