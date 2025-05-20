@@ -28,6 +28,8 @@ if (!isset($_SESSION['student'])) {
             <div class="yellow__bar"></div>
         </div>
 
+        <div id="responseMessage2" class="modern-alert" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000;"></div>
+
         <div class="container-fluid d-flex flex-column flex-lg-row align-items-center justify-content-center mt-1">
             <!-- Student Info Section -->
             <div class="content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center me-lg-2 ms-lg-5">
@@ -58,7 +60,7 @@ if (!isset($_SESSION['student'])) {
             </div>
 
             <!-- Camera Section -->
-            <div class="content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center me-lg-5 mt-4 mt-lg-0">
+            <div class="content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center me-lg-5 mt-4 mt-lg-0 fade-in" id="camera-section">
                 <div class="card shadow-lg border-0 rounded-4 text-center">
                     <video id="video" autoplay playsinline class="rounded border shadow w-100 mb-3"></video>
                     <canvas id="canvas" class="rounded border shadow w-100 d-none"></canvas>
@@ -93,8 +95,6 @@ if (!isset($_SESSION['student'])) {
                 </div>
             </div>
         </div>
-
-
     
     </div>
 

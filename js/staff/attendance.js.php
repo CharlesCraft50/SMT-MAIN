@@ -47,11 +47,11 @@
         };
 
         const goHome = () => {
-            setTimeout(() => {
-                if(homeRedirect) {
-                window.location.href = "../staff";
-                }
-            }, 1500);
+            // setTimeout(() => {
+            //     if(homeRedirect) {
+            //     window.location.href = "../staff";
+            //     }
+            // }, 1500);
         };
 
         const fetchExceptionDays = () => {
@@ -64,6 +64,10 @@
                     attendanceStatus = response.attendanceStatus;
                     
                     if (!exceptionDay) {
+
+                        $('#camera-section').addClass('show').removeClass('shrink');
+$('.student-info-area').addClass('shrink');
+
                         if(attendanceStatus == "not_attended") {
                             startCameraButton.click();
                         } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
@@ -77,11 +81,11 @@
                         }
                     } else {
                         if(attendanceStatus == "auto_time_in") {
-                            showResponseMessage('✅ Attended!', 'success', false);
+                            showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
                         } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
-                            showResponseMessage('🚫 Attended already!', 'danger', false);
+                            showResponseMessage('🚫 Attended already!', 'danger', false, 'responseMessage2');
                         } else if(attendanceStatus == "timeout_updated") {
-                            showResponseMessage('⏰ Timed Out!', 'warning', false);
+                            showResponseMessage('⏰ Timed Out!', 'warning', false, 'responseMessage2');
                         }
                         
                         hideButtons();
@@ -231,8 +235,8 @@
             }, 'image/jpeg');
         }
 
-        function showResponseMessage(message, type, fadeOut = true) {
-            const msgBox = document.getElementById('responseMessage');
+        function showResponseMessage(message, type, fadeOut = true, id = "responseMessage") {
+            const msgBox = document.getElementById(id);
             msgBox.className = `modern-alert ${type === 'success' ? 'modern-alert-success' : 'modern-alert-danger'}`;
             msgBox.textContent = message;
             msgBox.style.display = 'block';
@@ -251,5 +255,7 @@
         fetchStudent();
 
         startCamera();
+
+        fetchExceptionDays();
     });
 </script>
