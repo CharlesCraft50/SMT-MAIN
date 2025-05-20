@@ -13,13 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle file upload if image is provided
     if (!empty($_FILES['ViolationPicture']['name'])) {
-        $targetDir = '../images/';
-        $fileName = basename($_FILES['ViolationPicture']['name']);
-        $targetFilePath = $targetDir . $fileName;
+        $targetDir = '../php-api/content/images/';
+        $originalFileName = basename($_FILES['ViolationPicture']['name']);
+        $fileExt = pathinfo($originalFileName, PATHINFO_EXTENSION);
+
+        // Generate unique filename with datetime
+        $uniqueFileName = 'violation_' . date('Ymd_His') . '.' . $fileExt;
+        $targetFilePath = $targetDir . $uniqueFileName;
 
         // Move uploaded file to target directory
         if (move_uploaded_file($_FILES['ViolationPicture']['tmp_name'], $targetFilePath)) {
-            $violationPicture = 'images/' . $fileName;
+            $violationPicture = 'content/images/' . $uniqueFileName;
         }
     }
 

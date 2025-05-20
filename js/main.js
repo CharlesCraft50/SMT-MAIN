@@ -50,9 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(res.message);
             adminMessage.innerHTML = "Successful!. Redirecting...";
             adminMessage.className = "text-success mt-1";
-            setTimeout(() => {
-              window.location.href = "admin/dashboard.php";
-          }, 1500);
+            window.location.href = "admin/dashboard.php";
         } else if(res.status == 'failed') {
           console.log(res.message + ' pass: ' + post.password);
           adminMessage.innerHTML = "Incorrect password. Please try again.";

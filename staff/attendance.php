@@ -54,19 +54,50 @@ if (!isset($_SESSION['student'])) {
                         <strong class="fs-4 flex-fill text-start" id="totalViolationsText">Total Violations:</strong>
                         <p class="fs-3 flex-fill text-end mb-0" id="studentTotalViolations"></p>
                     </div>
-
-                    <button type="button" id="closeBtn" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center mt-3" style="height: auto; width: auto; background-color: #D9F0FF;">
-                        <span class="fs-3" style="margin-right: 0.5rem; color: #0D67A1;">CLOSE</span>
-                        <i class="bi bi-box-arrow-in-right fs-3" style="color: #0D67A1;"></i>
-                    </button>
                 </div>
             </div>
 
+            <!-- Camera Section -->
+            <div class="content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center me-lg-5 mt-4 mt-lg-0">
+                <div class="card shadow-lg border-0 rounded-4 text-center">
+                    <video id="video" autoplay playsinline class="rounded border shadow w-100 mb-3"></video>
+                    <canvas id="canvas" class="rounded border shadow w-100 d-none"></canvas>
+
+                    
+                    <div id="camera-ui" class="text-center">
+
+                        <div class="d-flex justify-content-center gap-3 mb-3 d-none">
+                            <button id="startCamera" class="btn btn-outline-primary px-4">
+                                <i class="bi bi-camera-video"></i> Start Camera
+                            </button>
+                            <button id="capture" class="btn btn-primary px-4" disabled>
+                                <i class="bi bi-camera"></i> Capture Photo
+                            </button>
+                        </div>
+
+                        <div class="p-5 pt-0">
+                            <div id="timer" class="text-danger fw-bold fs-1 mb-2">2</div>
+                            <div id="instruction" class="text-danger fs-5 mb-3">Please face the camera with your uniform or ID visible.</div>
+
+                            <!-- Loading Spinner -->
+                            <div id="loading">
+                                <div class="spinner mb-2"></div>
+                                <div id="loading-text" class="text-center">Processing... Please wait.</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Floating Message Box -->
+                    <div id="responseMessage" class="modern-alert position-fixed top-50 start-50 translate-middle d-none"></div>
+                </div>
+            </div>
+        </div>
 
 
     
     </div>
 
 </body>
-<?php require('../js/student/student_information.js.php') ?>
+<?php require('../js/staff/attendance.js.php') ?>
 </html>

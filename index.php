@@ -20,21 +20,21 @@
     <div class="container text-center mt-5" style="margin-top: 3rem !important;">
         <div class="row justify-content-center g-8">
             <!-- Admin -->
-            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center">
+            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center" style="cursor:pointer;">
                 <div class="btn-card w-100" id="adminBtn">
                     <i class="bi bi-person-fill"></i>
                 </div>
                 <p class="mt-4 roboto-medium card-p fs-2">ADMIN</p>
             </div>
             <!-- Staff -->
-            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center">
+            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center" style="cursor:pointer;">
                 <div class="btn-card w-100" id="staffBtn">
                     <i class="bi bi-person-fill"></i>
                 </div>
                 <p class="mt-4 roboto-medium card-p fs-2">STAFF</p>
             </div>
             <!-- Student -->
-            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center">
+            <div class="col-4 col-sm-3 col-md-2 d-flex flex-column align-items-center" style="cursor:pointer;">
                 <div class="btn-card w-100" id="studentBtn">
                     <i class="bi bi-person-fill"></i>
                 </div>
