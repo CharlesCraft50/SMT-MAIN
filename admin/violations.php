@@ -318,22 +318,25 @@ if($isAdmin != true) {
                     </div>
                     
                     <h4 class="text-center">Violations</h4>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Violation Type</th>
-                                <th>Violation Date</th>
-                                <th>Notes</th>
-                                <th>Status</th>
-                                <th>Image</th>
-                                <th></th>
-                            </tr>
-                        </thead>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Violation Type</th>
+                                    <th>Violation Date</th>
+                                    <th>Notes</th>
+                                    <th>Status</th>
+                                    <th>Image</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
 
-                        <tbody id="violationDetailsTableBody">
-                            <!-- Violations will be dynamically inserted here -->
-                        </tbody>
-                    </table>
+                            <tbody id="violationDetailsTableBody">
+                                <!-- Violations will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="addViolationButton">Add</button>
