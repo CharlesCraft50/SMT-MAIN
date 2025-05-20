@@ -48,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ];
                 } else {
                     $response = [
-                        'status' => 'failed',
-                        'message' => 'No changes made. Please ensure the data is different.'
-                    ];
+                        'status' => 'success',
+                        'message' => 'No changes made.',
+                        'no_changes' => true                    ];
                 }
             } else {
                 $response = [

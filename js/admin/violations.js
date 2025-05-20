@@ -306,8 +306,12 @@ $(document).ready(function () {
                             <button class="btn btn-danger" data-id="${violationID}" onclick="deleteViolation(this)">&times;</button>
                         </div>
                     `);
+                    
+                    if(response.no_changes) {
+                        showResponseMessage('#responseMessage', response.message, 'success');
+                    }
                 } else {
-                    showResponseMessage('#responseMessage', 'Failed to save changes: ' + response.message, 'danger');
+                    showResponseMessage('#responseMessage', 'Failed to save changes: ' + response.message, 'warning');
                 }
             },
             error: function() {
