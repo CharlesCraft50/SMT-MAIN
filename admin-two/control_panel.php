@@ -87,7 +87,7 @@
         </div>
     </div>
     
-    <?php require('../js/components/ui/sidebar.php'); ?>
+    <?php require('../js/components/ui/sidebarTwo.php'); ?>
 
     <div class="main-content">
         <div id="responseMessage" class="modern-alert" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000;"></div>

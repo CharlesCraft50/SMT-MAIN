@@ -1,7 +1,6 @@
 <?php
 session_start();
 if (!isset($_SESSION['student'])) {
-  // If not set, exit the script or redirect to a different page
   echo "No student session found. Exiting.";
   exit();
 }

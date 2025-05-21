@@ -25,9 +25,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $violationDate = filter_input(INPUT_POST, 'ViolationDate', FILTER_SANITIZE_STRING);
     $violateAttendance = 1;
     $violateViolated = 1;
-    $violatedPicture = "images/placeholder.png";
+
     $notes = filter_input(INPUT_POST, 'Notes', FILTER_SANITIZE_STRING);
     $violationStatus = 'Pending'; // Default status
+
+    // Default image if none uploaded
+    $violationPicture = 'images/placeholder.png';
+
+    // Handle file upload if image is provided
+    if (!empty($_FILES['ViolationPicture']['name'])) {
+        $targetDir = '../php-api/content/images/';
+        $originalFileName = basename($_FILES['ViolationPicture']['name']);
+        $fileExt = pathinfo($originalFileName, PATHINFO_EXTENSION);
+
+        // Generate unique filename with datetime
+        $uniqueFileName = 'violation_' . date('Ymd_His') . '.' . $fileExt;
+        $targetFilePath = $targetDir . $uniqueFileName;
+
+        // Move uploaded file to target directory
+        if (move_uploaded_file($_FILES['ViolationPicture']['tmp_name'], $targetFilePath)) {
+            $violationPicture = 'content/images/' . $uniqueFileName;
+        }
+    }
 
     // Input validation
     if (!$studentID || !$violationType || !$violationDate) {
@@ -54,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':Attendance', $violateAttendance, PDO::PARAM_INT);
             $stmt->bindParam(':Violated', $violateViolated, PDO::PARAM_INT);
             $stmt->bindParam(':Notes', $notes, PDO::PARAM_STR);
-            $stmt->bindParam(':ViolationPicture', $violatedPicture, PDO::PARAM_STR);
+            $stmt->bindParam(':ViolationPicture', $violationPicture, PDO::PARAM_STR);
             $stmt->bindParam(':ViolationStatus', $violationStatus, PDO::PARAM_STR);
 
             if ($stmt->execute()) {

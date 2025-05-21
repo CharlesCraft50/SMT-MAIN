@@ -6,8 +6,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$response = array();
 	$isAdmin = isset($data['isAdmin']) ? $data['isAdmin'] : false;
 	$password = isset($data['password']) ? $data['password'] : '';
+	$passwordTwo = isset($data['passwordTwo']) ? $data['passwordTwo'] : '';
 
 	if($password === "admin123") {
+		$_SESSION['isAdmin'] = true;
+		$response = ['status' => 'success', 'message' => 'Successfully admin!'];
+	} else if($passwordTwo == "admin321") {
 		$_SESSION['isAdmin'] = true;
 		$response = ['status' => 'success', 'message' => 'Successfully admin!'];
 	} else {

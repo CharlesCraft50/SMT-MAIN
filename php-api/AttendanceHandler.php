@@ -5,7 +5,8 @@ require('connect.php');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = $_POST;
     $input = isset($data['studentID']) ? trim($data['studentID']) : ''; // This input can be either StudentID or RFID
-
+    $idViolation = false;
+    
     try {
         // Try finding student by StudentID first
         $checkStudentSQL = "SELECT * FROM Students WHERE StudentID = :input OR RFID = :input";
@@ -16,6 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($student) {
             $studentID = $student['StudentID'];
             $attendanceDate = date('Y-m-d');
+            
+
+            if($input == $studentID) {
+                $idViolation = true;
+            }
 
             // Check if attendance already exists
             $checkAttendanceSQL = "SELECT * FROM DailyRecords WHERE StudentID = :studentID AND DATE(ViolationDate) = :attendanceDate";
@@ -40,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             //         ':violated' => 0,
             //         ':violationStatus' => 'Pending'
             //     ]);
+                $student['idViolation'] = $idViolation;
 
                 $_SESSION['student'] = $student;
                 echo json_encode(['status' => 'success', 'message' => 'Attendance recorded', 'student' => $student]);

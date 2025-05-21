@@ -43,8 +43,50 @@
         </div>
     </div>
 
-    <!-- Admin Password Modal -->
     <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- made it wider with modal-lg -->
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminModalLabel">Choose admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container text-center mt-5">
+                        <div class="row justify-content-center g-4">
+                            <!-- Admin 1 -->
+                            <div class="col-6 col-sm-4 col-md-3 d-flex flex-column align-items-center">
+                                <div class="btn-card px-4 py-3" id="adminMainBtn" style="min-width: 120px; cursor: pointer;">
+                                    <i class="bi bi-person-fill fs-0"></i>
+                                </div>
+                                <p class="mt-3 roboto-medium card-p fs-5">ADMIN MAIN</p>
+                            </div>
+
+                            <!-- Admin 2 -->
+                            <div class="col-6 col-sm-4 col-md-3 d-flex flex-column align-items-center">
+                                <div class="btn-card px-4 py-3" id="adminTwoBtn" style="min-width: 120px; cursor: pointer;">
+                                    <i class="bi bi-person-fill fs-0"></i>
+                                </div>
+                                <p class="mt-3 roboto-medium card-p fs-5">ADMIN 2</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="adminMessage" class="text-center mt-3"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close__btn" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary submit__btn" id="confirmAdmin">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Admin Password Modal -->
+    <div class="modal fade" id="adminPasswordModal" tabindex="-1" aria-labelledby="adminPasswordModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="submitAdminForm">
                 <div class="modal-header">
@@ -58,6 +100,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close__btn" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary submit__btn" id="confirmAdmin">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Two Password Modal -->
+    <div class="modal fade" id="adminTwoPasswordModal" tabindex="-1" aria-labelledby="adminTwoPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="submitAdminTwoForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminTwoModalLabel">Enter Admin 2 Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="password" class="form-control" id="adminTwoPassword" placeholder="Password">
+                    <div id="adminMessage" class="text-center mt-1"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close__btn" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary submit__btn" id="confirmAdminTwo">Submit</button>
                 </div>
             </form>
         </div>

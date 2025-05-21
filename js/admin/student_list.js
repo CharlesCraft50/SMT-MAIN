@@ -201,7 +201,7 @@ $('#submitStudentRFID').submit(function(e) {
 $('#show_rfid-area').click(function() {
     if ($('.rfid-area').css('display') === 'none') {
         $('.rfid-area').show();
-        $('#show_rfid-area').text('Hide RFID');
+        $('#show_rfid-area').text('Cancel');
         $('#submitStudentRFID input:first').focus();
     } else {
         $('.rfid-area').hide();

@@ -10,6 +10,9 @@
     }
 
     $studentID = $_SESSION['student']['StudentID'];
+    $idViolation = !empty($_SESSION['student']['idViolation']) 
+            ? ($_SESSION['student']['idViolation'] ? 'WithoutID' : null) 
+            : null;
 
     function isExceptionDay($pdo) {
         $today = new DateTime();
@@ -29,11 +32,11 @@
         return $dateException || $weekdayException;
     }
 
-    function checkAndUpdateAttendance($pdo, $studentID, $isException) {
+    function checkAndUpdateAttendance($pdo, $studentID, $isException, $idViolation) {
         $todayStr = (new DateTime())->format('Y-m-d');
 
         $stmt = $pdo->prepare("
-            SELECT RecordID, TimeIn, TimeOut 
+            SELECT RecordID, TimeIn, TimeOut
             FROM DailyRecords 
             WHERE StudentID = :StudentID AND ViolationDate = :today 
             LIMIT 1
@@ -77,18 +80,19 @@
             if ($isException) {
                 $timeInStr = date('Y-m-d H:i:s');
                 $insertStmt = $pdo->prepare("
-                    INSERT INTO DailyRecords (StudentID, ViolationDate, Attendance, TimeIn, ViolationStatus)
-                    VALUES (:StudentID, :ViolationDate, '1', :TimeIn, 'Pending')
+                    INSERT INTO DailyRecords (StudentID, ViolationDate, Attendance, TimeIn, ViolationType, ViolationStatus)
+                    VALUES (:StudentID, :ViolationDate, '1', :TimeIn, :ViolationType, 'Pending')
                 ");
                 $insertStmt->execute([
                     'StudentID' => $studentID,
                     'ViolationDate' => date('Y-m-d'),
-                    'TimeIn' => $timeInStr
+                    'TimeIn' => $timeInStr,
+                    'ViolationType' => $idViolation
                 ]);
 
                 return [
                     'status' => 'auto_time_in',
-                    'timeIn' => $timeInStr
+                    'timeIn' => $timeInStr,
                 ];
             }
         }
@@ -98,13 +102,14 @@
 
     // Run logic
     $exceptionDay = isExceptionDay($conn);
-    $attendanceResult = checkAndUpdateAttendance($conn, $studentID, $exceptionDay);
+    $attendanceResult = checkAndUpdateAttendance($conn, $studentID, $exceptionDay, $idViolation);
 
     // Compose response
     $response = [
         'status' => 'success',
         'message' => 'Day check complete.',
         'exceptionDay' => $exceptionDay,
+        'idViolation' => $idViolation
     ];
 
     if (is_array($attendanceResult)) {

@@ -21,6 +21,10 @@
     $studentID = $student['StudentID'];
     $studentName = str_replace(' ', '_', $student['StudentName']);
     $uniformStatus = filter_input(INPUT_POST, 'uniformStatus', FILTER_VALIDATE_INT);
+    $idViolation = !empty($_SESSION['student']['idViolation']) 
+        ? ($_SESSION['student']['idViolation'] ? 'WithoutID' : null) 
+        : null;
+    $hasIdViolation = false;
 
     if ($uniformStatus === null || $uniformStatus === false) {
         http_response_code(400);
@@ -110,15 +114,49 @@
             :Violated, :Notes, :ViolationPicture, :ViolationStatus
         )");
 
+
         if ($insert->execute($data)) {
+            // Main record inserted successfully
+            $hasIdViolation = false;
+
+            if ($idViolation) {
+                $idViolationData = [
+                    ':StudentID' => $studentID,
+                    ':ViolationType' => 'WithoutID',
+                    ':ViolationDate' => $violationDate,
+                    ':Attendance' => 1,
+                    ':TimeIn' => date('Y-m-d H:i:s'),
+                    ':Violated' => 1,
+                    ':Notes' => '',
+                    ':ViolationPicture' => $dbFilePath,
+                    ':ViolationStatus' => 'Pending'
+                ];
+
+                $insertID = $conn->prepare("INSERT INTO DailyRecords (
+                    StudentID, ViolationType, ViolationDate, Attendance, TimeIn,
+                    Violated, Notes, ViolationPicture, ViolationStatus
+                ) VALUES (
+                    :StudentID, :ViolationType, :ViolationDate, :Attendance, :TimeIn,
+                    :Violated, :Notes, :ViolationPicture, :ViolationStatus
+                )");
+
+                if ($insertID->execute($idViolationData)) {
+                    $hasIdViolation = true;
+                }
+            }
+
+            $violationMsg = $uniformStatus === 1
+                ? ($hasIdViolation ? '✅ Wearing Uniform but 🚫 No ID' : '✅ Wearing Uniform!')
+                : '🚫 Not Wearing Uniform' . ($hasIdViolation ? ' and No ID' : '');
+
             echo json_encode([
                 'status' => 'success',
-                'level' => $uniformStatus === 1 ? 'success' : 'danger',
-                'message' => $uniformStatus === 1 ? '✅ Wearing Uniform!' : '🚫 Not Wearing Uniform',
+                'level' => ($uniformStatus === 1 && !$hasIdViolation) ? 'success' : 'danger',
+                'message' => $violationMsg,
                 'recordID' => $conn->lastInsertId()
             ]);
         } else {
-            echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Failed to insert record.']);
+            echo json_encode(['status' => 'error', 'level' => 'danger', 'message' => 'Failed to insert uniform record.']);
         }
     } catch (PDOException $e) {
         http_response_code(500);

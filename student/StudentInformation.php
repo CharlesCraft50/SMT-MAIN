@@ -1,7 +1,6 @@
 <?php
 session_start();
 if (!isset($_SESSION['student'])) {
-  // If not set, exit the script or redirect to a different page
   echo "No student session found. Exiting.";
   exit();
 }
@@ -63,8 +62,29 @@ if (!isset($_SESSION['student'])) {
             </div>
 
 
+            <!-- Violation Table Section -->
+            <div class="container-fluid content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center ms-lg-2 me-lg-5 mt-4 mt-lg-0">
+                <div class="student-info-area violation-table-area w-100">
+                    <h1 class="text-center mb-4 text-white">Violations</h1>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped bg-white">
+                            <thead>
+                                <tr>
+                                    <th>Violation Type</th>
+                                    <th>Violation Date</th>
+                                    <th>Notes</th>
+                                    <th>Status</th>
+                                    <th>Image</th>
+                                </tr>
+                            </thead>
+                            <tbody id="violationDetailsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    
+        <?php require('../js/components/ui/image_modal.php'); ?>
     </div>
 
 </body>

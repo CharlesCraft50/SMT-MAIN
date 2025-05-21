@@ -1,9 +1,6 @@
 <?php
-session_start();
-$isAdmin = isset($_SESSION['isAdmin']) ? $_SESSION['isAdmin'] : '';
-if($isAdmin != true) {
-  exit();
-}
+    require('../js/components/ui/admin_header.php');
+    $activeTab = "dashboard";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,29 +41,7 @@ if($isAdmin != true) {
         </div>
     </div>
 
-    <div class="sidebar">
-        <!-- Hamburger Button -->
-        <button class="hamburger-button">
-            <i class="bi bi-list"></i>
-        </button>
-        <hr>
-        <div class="sidebar-content">
-            <a href="#"><i class="bi bi-grid" style="color: #0D67A1; font-size: 24px;"></i> Dashboard</a>
-            <a href="studentList.php"><i class="bi bi-people" style="color: #0D67A1; font-size: 24px;"></i> Student List</a>
-            <a href="violations.php"><i class="bi bi-table" style="color: #0D67A1; font-size: 24px;"></i> Violations</a>
-            <a href="violations.php" id="addStudentNav" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                <i class="bi bi-person-plus" style="color: #0D67A1; font-size: 24px;"></i> Student Registration
-            </a>
-            <a href="control_panel.php"><i class="bi bi bi-card-list" style="color: #0D67A1; font-size: 24px;"></i> Control Panel</a>
-            <!-- `Logout` Button -->
-            <div class="logout-button-wrapper">
-                <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#logoutModal"
-                    style="background-color: #0D67A1; border-color: #0D67A1;">
-                    Logout
-                </button>
-            </div>
-        </div>
-    </div>
+    <?php require('../js/components/ui/sidebar.php'); ?>
 
     <div class="main-content">
         <div id="responseMessage" class="modern-alert" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000;"></div>
@@ -141,47 +116,7 @@ if($isAdmin != true) {
         
     </div>
 
-    <div id="addStudentModal" class="modal" tabindex="-1">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title">Add Student</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                  <form id="addStudentForm">
-                      <div class="mb-3">
-                          <label for="studentNo" class="form-label">Student Number</label>
-                          <input type="number" class="form-control" id="studentNo" required>
-                      </div>
-                      <div class="mb-3">
-                          <label for="studentName" class="form-label">Student Name</label>
-                          <input type="text" class="form-control" id="studentName" required>
-                      </div>
-                      <div class="mb-3">
-                          <label for="studentProgram" class="form-label">Program</label>
-                          <select class="form-select" id="studentProgram" required>
-                              <option value="">Select Program</option>
-                              <!-- Programs will be dynamically loaded -->
-                          </select>
-                      </div>
-                      <div class="mb-3">
-                          <label for="studentYear" class="form-label">Year</label>
-                          <select class="form-select" id="studentYear" required>
-                              <option value="">Select Year</option>
-                              <option value="1st">1st Year</option>
-                              <option value="2nd">2nd Year</option>
-                              <option value="3rd">3rd Year</option>
-                              <option value="4th">4th Year</option>
-                          </select>
-                      </div>
-                      <button type="submit" class="btn btn-primary">Add Student</button>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
-
+    <?php require('../js/components/ui/add_student_modal.php'); ?>
 
 </body>
 <script src="../js/admin/dashboard.js"></script>

@@ -40,37 +40,37 @@ $(document).ready(function () {
         }
     }
 
-    function fetchViolationsData() {
-    const searchQuery = $('#searchQuery').val();
-    const programID = $('#programFilter').val();
+    const fetchViolationsData = () => {
+        const searchQuery = $('#searchQuery').val();
+        const programID = $('#programFilter').val();
 
-    let searchData = {};
-    if ($.isNumeric(searchQuery)) {
-        searchData.StudentID = searchQuery;
-    } else {
-        searchData.StudentName = searchQuery;
-    }
-
-    searchData.ProgramID = programID;
-
-    $.ajax({
-        url: '../php-api/ReadViolations.php',
-        type: 'GET',
-        dataType: 'json',
-        data: searchData,
-        success: function (response) {
-            if (response.status === 'success') {
-                displayTable(response.data);
-            } else {
-                $('.violation-table-body').empty();
-                $('.violation-table-body').append('<tr><td colspan="4">No violations found</td></tr>');
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('AJAX Error:', error);
+        let searchData = {};
+        if ($.isNumeric(searchQuery)) {
+            searchData.StudentID = searchQuery;
+        } else {
+            searchData.StudentName = searchQuery;
         }
-    });
-    }
+
+        searchData.ProgramID = programID;
+
+        $.ajax({
+            url: '../php-api/ReadViolations.php',
+            type: 'GET',
+            dataType: 'json',
+            data: searchData,
+            success: function (response) {
+                if (response.status === 'success') {
+                    displayTable(response.data);
+                } else {
+                    $('.violation-table-body').empty();
+                    $('.violation-table-body').append('<tr><td colspan="4">No violations found</td></tr>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    };
 
 
     fetchViolationsData();
@@ -213,7 +213,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.violation-img', function () {
         const imgSrc = $(this).attr('src');
-        const dateText = $(this).closest('tr').find('td').eq(1).text(); // Assuming date is in 2nd column
+        const dateText = $(this).closest('tr').find('td').eq(1).text();
         $('#violationModalImg').attr('src', imgSrc);
         $('#violationImageModalLabel').text(dateText);
         $('#violationImageModal').modal('show');
@@ -366,10 +366,10 @@ $(document).ready(function () {
                     <span id="newViolationStatus">Pending</span>
                 </td>
                 <td>
+                    <input type="file" class="form-control violationNewPictureInput">
                     <img class="img-thumbnail violation-img" 
                         style="max-width: 80px; height: auto; cursor: pointer;" 
                         src="" 
-                        data-full=""
                         alt="Violation Image">
                 </td>
                 <td>
@@ -379,9 +379,22 @@ $(document).ready(function () {
                     </div>
                 </td>
             </tr>`;
-        
+
         // Append the new row to the violations table body
-        $('#violationDetailsTableBody').prepend(newViolationRow);
+        var $newRow = $(newViolationRow);
+        $('#violationDetailsTableBody').prepend($newRow);
+
+        // Bind change event to the newly added file input
+        $newRow.find('.violationNewPictureInput').on('change', function (e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    $(e.target).siblings('img.violation-img').attr('src', event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     });
 
     // Function to save the new violation
@@ -391,6 +404,8 @@ $(document).ready(function () {
         var violationType = row.find('#newViolationTypeDropdown').val();
         var violationDate = row.find('#newViolationDateInput').val();
         var notes = row.find('#newNotesInput').val();
+        var violationImageInput = row.find('.violationNewPictureInput')[0].files[0] || 'images/placeholder.png';
+        var violationImageSrc = row.find('img.violation-img').attr('src');
         var status = 'Pending';
 
         if (!violationDate) {
@@ -398,17 +413,25 @@ $(document).ready(function () {
             return;
         }
 
-        // Send an AJAX request to save the new violation
+        var formData = new FormData();
+        formData.append('ViolationType', violationType);
+        formData.append('ViolationDate', violationDate);
+        formData.append('Notes', notes);
+        formData.append('ViolationStatus', status);
+        formData.append('StudentID', $('#studentNoDisplay').text());
+
+        if (violationImageInput instanceof File) {
+            formData.append('ViolationPicture', violationImageInput);
+        } else {
+            formData.append('ViolationPicture', '');
+        }
+
         $.ajax({
             url: '../php-api/AddStudentViolation.php',
             method: 'POST',
-            data: {
-                ViolationType: violationType,
-                ViolationDate: violationDate,
-                Notes: notes,
-                ViolationStatus: status,
-                StudentID: $('#studentNoDisplay').text() // Get the student ID from the modal
-            },
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (response) {
                 if (response.status === "success") {
                     // Replace input fields with the saved data
@@ -416,7 +439,10 @@ $(document).ready(function () {
                     row.find('td').eq(1).text(formatDateForDisplay(violationDate));
                     row.find('td').eq(2).text(notes);
                     row.find('td').eq(3).text(status);
-                    row.find('td').eq(4).text(imageInput);
+                    row.find('td').eq(4).html(`<img class="img-thumbnail violation-img" 
+                        style="max-width: 80px; height: auto; cursor: pointer;" 
+                        src="${violationImageSrc}" 
+                        alt="Violation Image">`);
                     row.find('td').eq(5).html(`
                         <div class="inline-buttons">
                             <button class="btn btn-warning" data-id="${response.recordID}" onclick="editViolation(this)">Update</button>

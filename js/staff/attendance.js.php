@@ -62,25 +62,16 @@
                 success: (response) => {
                     exceptionDay = response.exceptionDay;
                     attendanceStatus = response.attendanceStatus;
-                    
-                    if (!exceptionDay) {
-
-                        if(attendanceStatus == "not_attended") {
-                            startCameraButton.click();
-                        } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
-                            showResponseMessage('🚫 Attended already!', 'danger', false);
-                            hideButtons();
-                            goHome();
-                        } else if(attendanceStatus == "timeout_updated") {
-                            showResponseMessage('⏰ Timed Out!', 'warning', false);
-                            hideButtons();
-                            goHome();
-                        }
-                    } else {
+                    if (exceptionDay) {
                         $('#camera-section').remove();
                         
                         if(attendanceStatus == "auto_time_in") {
-                            showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
+                            if(response.idViolation) {
+                                showResponseMessage('🚫 Not Wearing ID', 'danger', false, 'responseMessage2');
+                            } else {
+                                showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
+                            }
+                            
                         } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
                             showResponseMessage('🚫 Attended already!', 'danger', false, 'responseMessage2');
                         } else if(attendanceStatus == "timeout_updated") {
