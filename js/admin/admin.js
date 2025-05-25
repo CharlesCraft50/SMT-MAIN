@@ -94,7 +94,9 @@ $(document).ready(function(){
                     $('#studentName').val('');
                     $('#studentYear').val('');
                     $('#studentProgram').val('');
-                    fetchStudentData();
+                    if (typeof fetchStudentData === 'function') {
+                        fetchStudentData();
+                    }
                 } else {
                     showResponseMessage('#responseMessage', jsonResponse.message, 'danger');
                 }

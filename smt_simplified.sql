@@ -100,3 +100,10 @@ CREATE TABLE ExceptionDays (
     -- Prevent duplicate single-date exceptions
     UNIQUE (StartDate, EndDate)
 );
+
+CREATE TABLE CheckingBehavior (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    turnOn BOOLEAN DEFAULT TRUE UNIQUE
+);
+
+INSERT INTO CheckingBehavior (turnOn) VALUES (TRUE);

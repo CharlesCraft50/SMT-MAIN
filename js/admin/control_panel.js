@@ -6,6 +6,7 @@ $(document).ready(function () {
     });
 
     let isClearing = false;
+    let turnOn;
 
     $('#dateRange').on('input', function () {
         if (isClearing) return;
@@ -70,6 +71,36 @@ $(document).ready(function () {
             }
         });
     });
+
+   $("#automaticChecking").change(function () {
+        $.ajax({
+            url: '../php-api/UpdateCheckingBehavior.php',
+            method: 'POST',
+            data: JSON.stringify({ turnOn: this.checked }),
+            dataType: 'json',
+            success: (response) => {
+                showResponseMessage('#responseMessage', 'Updated to ' + (this.checked ? 'Automatic' : 'Manual'), 'success');
+            },
+            error: (xhr, status, error) => {
+                showResponseMessage('#responseMessage', 'Error updating checking behavior.', 'danger');
+                console.error('AJAX Error:', error);
+            }
+        });
+    });
+
+    const fetchCheckingBehavior = () => {
+        $.ajax({
+            url: '../php-api/ReadCheckingBehavior.php',
+            method: 'GET',
+            dataType: 'json',
+            success: (response) => {
+                $("#automaticChecking").prop('checked', turnOn = response.turnOn);
+            },
+            error: (xhr, status, error) => {
+                console.error('AJAX Error:', error);
+            }
+        });
+    };
 
     const fetchExceptionDays = () => {
         $.ajax({
@@ -143,4 +174,5 @@ $(document).ready(function () {
     }
 
     fetchExceptionDays();
+    fetchCheckingBehavior();
 });

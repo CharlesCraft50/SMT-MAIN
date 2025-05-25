@@ -1,3 +1,4 @@
+
 <?php
     session_start();
 
@@ -25,6 +26,7 @@
         ? ($_SESSION['student']['idViolation'] ? 'WithoutID' : null) 
         : null;
     $hasIdViolation = false;
+    $violationType = null;
 
     if ($uniformStatus === null || $uniformStatus === false) {
         http_response_code(400);
@@ -36,6 +38,13 @@
     $violationDate = date('Y-m-d');
     $fileName = "{$studentID}_{$violationDate}.jpg";
     $baseFolder = __DIR__ . '/content';
+
+    if ($uniformStatus === null || $uniformStatus === false) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid or missing uniform status.']);
+        exit();
+    }
+
     $folder = $baseFolder . ($uniformStatus === 1 ? '/uniform/' : '/not_wearing_uniform/') . $studentName;
     $dbFilePath = "content" . ($uniformStatus === 1 ? '/uniform/' : '/not_wearing_uniform/') . $studentName . '/' . $fileName;
 
@@ -94,6 +103,7 @@
 
         // Insert new violation record
         $violationType = $uniformStatus === 1 ? '' : 'WithoutUniform';
+        
         $data = [
             ':StudentID' => $studentID,
             ':ViolationType' => $violationType,
@@ -124,7 +134,7 @@
                     ':StudentID' => $studentID,
                     ':ViolationType' => 'WithoutID',
                     ':ViolationDate' => $violationDate,
-                    ':Attendance' => 1,
+                    ':Attendance' => 0,
                     ':TimeIn' => date('Y-m-d H:i:s'),
                     ':Violated' => 1,
                     ':Notes' => '',
@@ -143,6 +153,8 @@
                 if ($insertID->execute($idViolationData)) {
                     $hasIdViolation = true;
                 }
+                
+                
             }
 
             $violationMsg = $uniformStatus === 1

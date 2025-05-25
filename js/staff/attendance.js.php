@@ -4,6 +4,7 @@
         let countRestart = 0;
         let homeRedirect = true;
         let exceptionDay = false;
+        let isManualMode = false;
 
         const canvas = document.getElementById('canvas');
         const video = document.getElementById('video');
@@ -54,50 +55,89 @@
             }, 1500);
         };
 
-        const fetchExceptionDays = () => {
-            $.ajax({
-                url: '../php-api/CheckIfExceptionDay.php',
+        const preCheckAttendance = () => {
+            return $.ajax({
+                url: '../php-api/PreCheckAttendance.php',
                 method: 'GET',
                 dataType: 'json',
-                success: (response) => {
-                    exceptionDay = response.exceptionDay;
-                    attendanceStatus = response.attendanceStatus;
-                    if (exceptionDay) {
-                        $('#camera-section').remove();
-                        
-                        if(attendanceStatus == "auto_time_in") {
-                            if(response.idViolation) {
-                                showResponseMessage('🚫 Not Wearing ID', 'danger', false, 'responseMessage2');
-                            } else {
-                                showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
-                            }
-                            
-                        } else if(attendanceStatus == "attended_recently" || attendanceStatus == "attended_and_timed_out") {
-                            showResponseMessage('🚫 Attended already!', 'danger', false, 'responseMessage2');
-                        } else if(attendanceStatus == "timeout_updated") {
-                            showResponseMessage('⏰ Timed Out!', 'warning', false, 'responseMessage2');
-                        }
-                        
-                        hideButtons();
+                processData: false,
+                contentType: false
+            }).then(response => {
+                exceptionDay = response.exceptionDay;
+                isManualMode = response.isManualMode;
 
-                        goHome();
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('AJAX Error:', error);
+                if (exceptionDay) {
+                    $('#camera-section').remove();
+                    processStatus(response);
+                    return false; // no need to run camera
                 }
+
+                processStatus(response, true); // Start camera if not exception day
+
+                if(response.attendanceStatus == "attended_recently" || response.attendanceStatus == "attended_and_timed_out" || response.attendanceStatus == "timeout_updated") {
+                    return false; // don't run camera
+                }
+                return true; // run camera
+            }).catch(error => {
+                console.error('AJAX Error:', error);
+                return true; // default to true if error
             });
         };
 
-    async function startCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
+        const fetchExceptionDays = async () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                captureButton.disabled = false;
+            canvas.toBlob(async function (blob) {
+                const formData = new FormData();
+                formData.append('file', blob, 'capture.jpg');
 
-                video.addEventListener('loadeddata', () => {
-                    const checkInterval = setInterval(() => {
+                $.ajax({
+                    url: '../php-api/CheckIfExceptionDay.php',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (response) => {
+                        exceptionDay = response.exceptionDay;
+                        isManualMode = response.isManualMode;
+
+                        if (exceptionDay) {
+                            $('#camera-section').remove();
+                            processStatus(response);
+                        } else {
+                            processStatus(response, true); // Start camera if not an exception day
+                        }
+                    },
+                    error: (xhr, status, error) => {
+                        console.error('AJAX Error:', error);
+                    }
+                });
+            }, 'image/jpeg');
+        };
+
+
+    const startCamera = async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+
+            captureButton.disabled = false;
+
+            video.addEventListener('loadeddata', () => {
+                // Camera is ready, now fetch exception day
+                fetchExceptionDays(); // Moved here
+
+                if (isManualMode) {
+                    // Immediate capture for manual mode
+                    captureButton.click();
+                    return;
+                }
+
+                const checkInterval = setInterval(() => {
                     const tempCanvas = document.createElement('canvas');
                     tempCanvas.width = video.videoWidth;
                     tempCanvas.height = video.videoHeight;
@@ -109,18 +149,17 @@
 
                     let total = 0;
                     for (let i = 0; i < pixels.length; i += 4) {
-                    const r = pixels[i];
-                    const g = pixels[i + 1];
-                    const b = pixels[i + 2];
-                    const brightness = (r + g + b) / 3;
-                    total += brightness;
+                        const r = pixels[i];
+                        const g = pixels[i + 1];
+                        const b = pixels[i + 2];
+                        const brightness = (r + g + b) / 3;
+                        total += brightness;
                     }
 
                     const avgBrightness = total / (pixels.length / 4);
 
                     if (avgBrightness > 30) {
                         clearInterval(checkInterval);
-
                         let countdown = 1;
                         timerElement.textContent = countdown;
 
@@ -129,30 +168,29 @@
                             timerElement.textContent = countdown;
 
                             if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            captureButton.click();
+                                clearInterval(countdownInterval);
+                                captureButton.click();
                             }
                         }, 1000);
                     }
+                }, 500);
+            });
 
-                    }, 500);
-                });
+            captureButton.onclick = async () => {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                captureButton.onclick = async () => {
-                    const context = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                    stopCamera(); // Stop camera & hide video
-                    await sendToPrediction(); // Send image to /predict
-                };
-
-            } catch (error) {
-                console.error('Error accessing the camera:', error);
-                alert('Unable to access the camera. Please allow camera access.');
-            }
+                stopCamera();
+                await sendToPrediction();
+            };
+        } catch (error) {
+            console.error('Error accessing the camera:', error);
+            alert('Unable to access the camera. Please allow camera access.');
         }
+    };
+
 
         function stopCamera() {
             if (stream) {
@@ -186,7 +224,7 @@
                 console.log(result.prediction === "Uniform" ? 1 : 0);
 
                 // Send the image and uniform status to your PHP script
-                const phpResponse = await fetch('../php-api/AddAttendance.php', {  // Update with actual PHP script path
+                const phpResponse = await fetch('../php-api/AddAttendance.php', { 
                     method: 'POST',
                     body: formData
                 });
@@ -227,7 +265,7 @@
 
         function showResponseMessage(message, type, fadeOut = true, id = "responseMessage") {
             const msgBox = document.getElementById(id);
-            msgBox.className = `modern-alert ${type === 'success' ? 'modern-alert-success' : 'modern-alert-danger'}`;
+            msgBox.className = `modern-alert ${type === 'success' ? 'modern-alert-success' : 'modern-alert-danger'} fs-3`;
             msgBox.textContent = message;
             msgBox.style.display = 'block';
             msgBox.style.opacity = '1';
@@ -241,14 +279,38 @@
             }
             
         }
+
+        const processStatus = (response, startCameraEnabled = false) => {
+            if(response.attendanceStatus == "auto_time_in") {
+                if(response.idViolation) {
+                    showResponseMessage('🚫 Not Wearing ID', 'danger', false, 'responseMessage2');
+                } else {
+                    showResponseMessage('✅ Attended!', 'success', false, 'responseMessage2');
+                }
+            } else if(response.attendanceStatus == "attended_recently" || response.attendanceStatus == "attended_and_timed_out") {
+                showResponseMessage('🚫 Attended already!', 'danger', false, 'responseMessage2');
+            } else if(response.attendanceStatus == "timeout_updated") {
+                showResponseMessage('⏰ Timed Out!', 'warning', false, 'responseMessage2');
+            } else if(response.attendanceStatus == "not_attended" && startCameraEnabled) {
+                //startCamera();
+                return;
+            } else if(response.attendanceStatus == "manual_upload_completed") {
+                showResponseMessage('📝 Attended (uniform checking is off)!', 'success', false, 'responseMessage2');
+            }
+
+            hideButtons();
+
+            goHome();
+        };
     
         fetchStudent();
 
-        if(!exceptionDay) {
-            startCamera();
-        }
+        preCheckAttendance().then(runCamera => {
+            if (runCamera) {
+                startCamera();
+            }
+        });
         
-
-        fetchExceptionDays();
+        
     });
 </script>

@@ -165,7 +165,20 @@
 
                 
             </div>
-   
+
+            <div class="row mx-3 g-5 mt-2">
+                <div class="col-12 col-md-8 mx-auto">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body p-5 text-center">
+                            <h5 class="mb-4 fw-semibold text-primary">Scanning of Violations</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="automaticChecking" checked>
+                                <label class="form-check-label fs-5" for="automaticChecking">Automatic Checking</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="col-12">
                 <div class="card text-center">
