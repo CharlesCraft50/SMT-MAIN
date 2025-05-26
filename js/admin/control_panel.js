@@ -79,13 +79,23 @@ $(document).ready(function () {
             data: JSON.stringify({ turnOn: this.checked }),
             dataType: 'json',
             success: (response) => {
-                showResponseMessage('#responseMessage', 'Updated to ' + (this.checked ? 'Automatic' : 'Manual'), 'success');
+                let checkingBehavior = this.checked ? 'Automatic' : 'Manual';
+                showResponseMessage('#responseMessage', 'Updated to ' + checkingBehavior, 'success');
+
+                $('#automaticCheckingText').text(checkingBehavior + ' Checking');
+
             },
             error: (xhr, status, error) => {
                 showResponseMessage('#responseMessage', 'Error updating checking behavior.', 'danger');
                 console.error('AJAX Error:', error);
             }
         });
+
+        if (this.checked) {
+            $('#manualUpdateViolationsArea').slideUp();
+        } else {
+            $('#manualUpdateViolationsArea').slideDown();
+        }
     });
 
     const fetchCheckingBehavior = () => {
@@ -94,7 +104,15 @@ $(document).ready(function () {
             method: 'GET',
             dataType: 'json',
             success: (response) => {
+                let checkingBehavior = response.turnOn ? 'Automatic' : 'Manual';
+                $('#automaticCheckingText').text(checkingBehavior + ' Checking');
                 $("#automaticChecking").prop('checked', turnOn = response.turnOn);
+                if (response.turnOn) {
+                    $('#manualUpdateViolationsArea').slideUp();
+                } else {
+                    $('#manualUpdateViolationsArea').slideDown();
+                }
+
             },
             error: (xhr, status, error) => {
                 console.error('AJAX Error:', error);
@@ -115,6 +133,55 @@ $(document).ready(function () {
             }
         });
     };
+
+    $('#manualUpdateViolations').click(function() {
+        $('#manualUpdateViolationsLoading').removeClass('d-none');
+        $.ajax({
+            url: "http://127.0.0.1:8000/predict/manual_folder/",
+            method: "GET",
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                Object.entries(response).forEach(([key, predictions]) => {
+                const studentID = key.split('-').pop(); // get ID after last hyphen
+                const studentName = key.split('-').slice(0, -1).join('_'); // student name
+
+                predictions.forEach(pred => {
+                    const violationType = pred.prediction === 'Non-Uniform' ? 'WithoutUniform' : null;
+                    const fileName = pred.filename;
+                    const studentNameFolder = key;
+
+                    if (violationType) {
+                        const violationForm = new FormData();
+                        violationForm.append('ViolationType', violationType); // 0 means Non-Uniform
+                        violationForm.append('StudentID', studentID);
+                        violationForm.append('StudentFolderName', studentNameFolder);
+                        violationForm.append('FileName', fileName);
+
+                        $.ajax({
+                            url: '../php-api/AddViolationManually.php',
+                            method: 'POST',
+                            data: violationForm,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                $('#manualUpdateViolationsLoading').addClass('d-none');
+                                showResponseMessage('#responseMessage', response.message, 'success');
+                            },
+                            error: function () {
+                                showResponseMessage('#responseMessage', 'Failed to insert violation for', studentName, 'danger');
+                            }
+                        });
+                    }
+                });
+                });
+            },
+            error: function () {
+                alert('Prediction failed.');
+            }
+            });
+
+    });
 
     const displayTable = (data) => {
         let tableBody = $('.exception-days-table-body');

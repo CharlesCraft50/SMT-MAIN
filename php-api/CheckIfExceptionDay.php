@@ -10,7 +10,7 @@
     }
 
     $studentID = $_SESSION['student']['StudentID'];
-    $studentName = str_replace(' ', '_', $_SESSION['student']['StudentName']);
+    $studentName = str_replace(' ', '_', $_SESSION['student']['StudentName']) . '-' . $_SESSION['student']['StudentID'];
     $idViolation = !empty($_SESSION['student']['idViolation']) 
             ? ($_SESSION['student']['idViolation'] ? 'WithoutID' : null) 
             : null;

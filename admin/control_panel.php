@@ -173,8 +173,21 @@
                             <h5 class="mb-4 fw-semibold text-primary">Scanning of Violations</h5>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="automaticChecking" checked>
-                                <label class="form-check-label fs-5" for="automaticChecking">Automatic Checking</label>
+                                <label class="form-check-label fs-5" for="automaticChecking" id="automaticCheckingText">Automatic Checking</label>
                             </div>
+
+                            <div id="manualUpdateViolationsArea">
+                                <input type="button" value="Update Violations Manually" id="manualUpdateViolations" class="btn btn-primary mt-5 mx-3" />
+
+                                <div id="manualUpdateViolationsLoading" class="d-none">
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                                        <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

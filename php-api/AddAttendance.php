@@ -20,7 +20,7 @@
 
     $student = $_SESSION['student'];
     $studentID = $student['StudentID'];
-    $studentName = str_replace(' ', '_', $student['StudentName']);
+    $studentName = str_replace(' ', '_', $student['StudentName']) . '-' . $_SESSION['student']['StudentID'];
     $uniformStatus = filter_input(INPUT_POST, 'uniformStatus', FILTER_VALIDATE_INT);
     $idViolation = !empty($_SESSION['student']['idViolation']) 
         ? ($_SESSION['student']['idViolation'] ? 'WithoutID' : null) 

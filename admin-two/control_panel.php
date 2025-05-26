@@ -165,7 +165,33 @@
 
                 
             </div>
-   
+
+            <div class="row mx-3 g-5 mt-2">
+                <div class="col-12 col-md-8 mx-auto">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body p-5 text-center">
+                            <h5 class="mb-4 fw-semibold text-primary">Scanning of Violations</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="automaticChecking" checked>
+                                <label class="form-check-label fs-5" for="automaticChecking" id="automaticCheckingText">Automatic Checking</label>
+                            </div>
+
+                            <div id="manualUpdateViolationsArea">
+                                <input type="button" value="Update Violations Manually" id="manualUpdateViolations" class="btn btn-primary mt-5 mx-3" />
+
+                                <div id="manualUpdateViolationsLoading" class="d-none">
+                                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                                        <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="col-12">
                 <div class="card text-center">

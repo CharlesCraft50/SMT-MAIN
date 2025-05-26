@@ -101,9 +101,13 @@ CREATE TABLE ExceptionDays (
     UNIQUE (StartDate, EndDate)
 );
 
-CREATE TABLE CheckingBehavior (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    turnOn BOOLEAN DEFAULT TRUE UNIQUE
-);
 
-INSERT INTO CheckingBehavior (turnOn) VALUES (TRUE);
+CREATE TABLE CheckingBehavior (
+    id INT PRIMARY KEY DEFAULT 1,
+    turnOn BOOLEAN NOT NULL DEFAULT TRUE,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_single_row CHECK (id = 1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Single-row configuration for automatic checking behavior';
+
+-- Insert the default configuration
+INSERT INTO CheckingBehavior (id, turnOn) VALUES (1, TRUE);

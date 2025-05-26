@@ -3,3 +3,10 @@ php-api/content/*
 
 # But keep the directory with a placeholder file
 !php-api/content/.gitkeep
+
+# Ignore specific files in php-api/model
+php-api/model/uniform_detector_model_best.keras
+php-api/model/yolov8n.pt
+
+# Ignore the __pycache__ folder (and any contents) in php-api/model
+php-api/model/__pycache__/
