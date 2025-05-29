@@ -296,6 +296,8 @@
                 return;
             } else if(response.attendanceStatus == "manual_upload_completed") {
                 showResponseMessage('📝 Attended (uniform checking is off)!', 'success', false, 'responseMessage2');
+            } else if(response.attendanceStatus == "manual_upload_completed_no_id") {
+                showResponseMessage('🚫 Not Wearing ID', 'danger', false, 'responseMessage2');
             }
 
             hideButtons();

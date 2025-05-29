@@ -149,10 +149,12 @@
 
         // ✅ Insert new record with ViolationType included
         $insert = $conn->prepare("INSERT INTO DailyRecords (
-            StudentID, ViolationDate, Attendance, TimeIn, Notes, ViolationPicture, ViolationType, ViolationStatus
+            StudentID, ViolationDate, Attendance, TimeIn, Notes, ViolationPicture, Violated, ViolationType, ViolationStatus
         ) VALUES (
-            :StudentID, :ViolationDate, :Attendance, :TimeIn, :Notes, :ViolationPicture, :ViolationType, :ViolationStatus
+            :StudentID, :ViolationDate, :Attendance, :TimeIn, :Notes, :ViolationPicture, :Violated, :ViolationType, :ViolationStatus
         )");
+
+        $violatedWithoutId = $idViolation == 'WithoutID' ? 1 : 0;
 
         $insert->execute([
             ':StudentID' => $studentID,
@@ -162,11 +164,12 @@
             ':Notes' => '',
             ':ViolationPicture' => $dbFilePath,
             ':ViolationType' => $idViolation, // ✅ Include ViolationType
+            ':Violated' => $violatedWithoutId,
             ':ViolationStatus' => 'Pending'
         ]);
 
         // Update response to indicate manual upload was processed
-        $attendanceResult['status'] = 'manual_upload_completed';
+        $attendanceResult['status'] = $violatedWithoutId == 1 ? 'manual_upload_completed_no_id' : 'manual_upload_completed';
         $attendanceResult['timeIn'] = date('Y-m-d H:i:s');
     }
 
