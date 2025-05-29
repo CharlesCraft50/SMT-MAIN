@@ -20,6 +20,8 @@
                     $('#studentYearDisplay').text(student.Year);
                     $('#studentCourseDisplay').text(student.ProgramCode);
                     $('#studentTotalViolations').text(response.violationCount);
+                    $('#studentTotalPendingViolations').text(response.totalPendingViolations);
+                    $('#studentTotalAttendance').text(response.totalAttendance);
                     if(response.violationCount >= 1) {
                         $('#totalViolationsText').text('Total Violation:');
                     }

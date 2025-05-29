@@ -42,6 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Get total attendance (Attendance = 1)
+        $attendanceStmt = $conn->prepare("SELECT COUNT(*) FROM DailyRecords WHERE StudentID = :StudentID AND Attendance = 1");
+        $attendanceStmt->bindParam(':StudentID', $studentID, PDO::PARAM_STR);
+        $attendanceStmt->execute();
+        $totalAttendance = (int) $attendanceStmt->fetchColumn();
+
         if ($results && count($results) > 0) {
             // Extract student info from first row
             $studentInfo = [
@@ -55,10 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             $violations = [];
             $violationCount = 0;
+            $totalPendingViolations = 0;
 
             foreach ($results as $row) {
+                if ($row['ViolationStatus'] === 'Pending') {
+                    $totalPendingViolations++;
+                }
+
                 if ($row['ViolationID']) {
-                    $violationCount++; // Count each valid violation
+                    $violationCount++;
                     $violations[] = [
                         'ViolationID' => $row['ViolationID'],
                         'ViolationType' => $row['ViolationType'],
@@ -74,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'message' => 'Student and violation data fetched.',
                 'student' => $studentInfo,
                 'violationCount' => $violationCount,
+                'totalPendingViolations' => $totalPendingViolations,
+                'totalAttendance' => $totalAttendance,
                 'violations' => $violations
             ];
         } else {
@@ -92,6 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     'message' => 'Student found but no violations.',
                     'student' => $student,
                     'violationCount' => 0,
+                    'totalPendingViolations' => 0,
+                    'totalAttendance' => $totalAttendance,
                     'violations' => []
                 ];
             } else {

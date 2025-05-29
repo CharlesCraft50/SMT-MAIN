@@ -27,62 +27,67 @@ if (!isset($_SESSION['student'])) {
             <div class="yellow__bar"></div>
         </div>
 
-        <div class="container-fluid d-flex flex-column flex-lg-row align-items-center justify-content-center mt-1">
-            <!-- Student Info Section -->
-            <div class="content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center me-lg-2 ms-lg-5">
-                <div class="student-info-area text-center w-100">
-                    <h1 class="text-center mb-4 text-white">Student Information</h1>
-                    <div class="d-flex align-items-center mb-3 p-3 rounded w-100 bg-lightblue">
-                        <strong class="fs-4 flex-fill text-start">Student No:</strong>
-                        <p class="fs-3 flex-fill text-end mb-0" id="studentNoDisplay"></p>
-                    </div>
-                    <div class="d-flex align-items-center mb-3 p-3 rounded w-100 bg-lightblue">
-                        <strong class="fs-4 flex-fill text-start">Name:</strong>
-                        <p class="fs-3 flex-fill text-end mb-0" id="studentNameDisplay"></p>
-                    </div>
-                    <div class="d-flex align-items-center mb-3 p-3 rounded w-100 bg-lightblue">
-                        <strong class="fs-4 flex-fill text-start">Year Level:</strong>
-                        <p class="fs-3 flex-fill text-end mb-0" id="studentYearDisplay"></p>
-                    </div>
-                    <div class="d-flex align-items-center p-3 rounded w-100 bg-lightblue">
-                        <strong class="fs-4 flex-fill text-start">Program:</strong>
-                        <p class="fs-3 flex-fill text-end mb-0" id="studentCourseDisplay"></p>
-                    </div>
-
-                    <div class="d-flex align-items-center p-3 rounded w-100 bg-lightblue mt-3">
-                        <strong class="fs-4 flex-fill text-start" id="totalViolationsText">Total Violations:</strong>
-                        <p class="fs-3 flex-fill text-end mb-0" id="studentTotalViolations"></p>
-                    </div>
-
-                    <button type="button" id="closeBtn" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center mt-3" style="height: auto; width: auto; background-color: #D9F0FF;">
-                        <span class="fs-3" style="margin-right: 0.5rem; color: #0D67A1;">CLOSE</span>
-                        <i class="bi bi-box-arrow-in-right fs-3" style="color: #0D67A1;"></i>
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Violation Table Section -->
-            <div class="container-fluid content-area col-lg-6 col-md-12 d-flex flex-column align-items-center justify-content-center text-center ms-lg-2 me-lg-5 mt-4 mt-lg-0">
-                <div class="student-info-area violation-table-area w-100">
-                    <h1 class="text-center mb-4 text-white">Violations</h1>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped bg-white">
-                            <thead>
-                                <tr>
-                                    <th>Violation Type</th>
-                                    <th>Violation Date</th>
-                                    <th>Notes</th>
-                                    <th>Status</th>
-                                    <th>Image</th>
-                                </tr>
-                            </thead>
-                            <tbody id="violationDetailsTableBody">
-                            </tbody>
-                        </table>
+        <div class="container-fluid mt-5">
+            <div class="row justify-content-center g-3">
+                <!-- First Column -->
+                <div class="col-md-4">
+                    <div class="content-area d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="text-center w-100">
+                            <h1 class="text-start mt-3 mb-0 fw-bolder display-4" style="color: #0D67A1;">Student</h1>
+                            <h1 class="text-start mb-1 mt-0 fw-bolder display-4" style="color: #0D67A1;">Information</h1>
+                            <div class="d-flex align-items-center rounded w-100 mb-1" style="color: #0D67A1;">
+                                <strong class="fs-3 fw-bold text-start">Name:</strong>
+                                <p class="fs-3 text-start mb-0 ms-1" id="studentNameDisplay"></p>
+                            </div>
+                            <div class="d-flex align-items-center rounded w-100 mb-1" style="color: #0D67A1;">
+                                <strong class="fs-3 fw-bold text-start">Student No:</strong>
+                                <p class="fs-3 text-start mb-0 ms-1" id="studentNoDisplay"></p>
+                            </div>
+                            <div class="d-flex align-items-center rounded w-100 mb-1" style="color: #0D67A1;">
+                                <strong class="fs-3 fw-bold text-start">Year Level:</strong>
+                                <p class="fs-3 text-start mb-0 ms-1" id="studentYearDisplay"></p>
+                            </div>
+                            <div class="d-flex align-items-center rounded w-100 mb-1" style="color: #0D67A1;">
+                                <strong class="fs-3 fw-bold text-start">Program:</strong>
+                                <p class="fs-3 text-start mb-0 ms-1" id="studentCourseDisplay"></p>
+                            </div>
+                            <div class="d-flex align-items-center rounded w-100 mb-1" style="color: #0D67A1;">
+                                <strong class="fs-3 fw-bold text-start">Total Violations:</strong>
+                                <p class="fs-3 text-startd mb-0 ms-1" id="studentTotalViolations"></p>
+                            </div>
+                           
+                        </div>
                     </div>
                 </div>
+
+                <!-- Second Column -->
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="content-area d-flex flex-column align-items-center justify-content-center text-center">
+                            <div class="student-info-area text-center w-100">
+                                <h1 class="text-center mb-4 text-white">Yearly Record</h1>
+                                <div class="d-flex align-items-center mb-3 py-4 ps-2 rounded w-100 bg-lightblue">
+                                    <strong class="fs-4 flex-fill text-start">Pending Violations:</strong>
+                                    <p class="fs-3 flex-fill text-end mb-0 mx-3" id="studentTotalPendingViolations">0</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-3 py-4 px-2 rounded w-100 bg-lightblue">
+                                    <strong class="fs-4 flex-fill text-start">Attendance Record:</strong>
+                                    <p class="fs-3 flex-fill text-end mb-0 mx-3" id="studentTotalAttendance">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <button type="button" id="closeBtn" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center mt-3 rounded-pill" style="height: auto; width: auto; background-color: #0D67A1;">
+                                <span class="fs-3" style="margin-right: 0.5rem;">DONE</span>
+                                <i class="bi bi-box-arrow-in-right fs-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
         <?php require('../js/components/ui/image_modal.php'); ?>
     </div>
