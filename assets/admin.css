@@ -1,0 +1,331 @@
+body {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    display: flex;
+    background-color: #f4f4f4;
+}
+
+.sidebar {
+    width: 290px !important;
+    height: 120vh;
+    max-width: 240px !important;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+}
+
+.sidebar hr {
+    margin-bottom: 40px;
+}
+
+.sidebar h2 {
+    margin: 0;
+    color: #007BFF;
+}
+
+.sidebar a {
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #e7f3fe;
+}
+#idChart, #uniformChart {
+    text-align: center;
+}
+
+.main-content {
+    flex-grow: 1;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.blue__bar {
+    background-color: #0D67A1;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 15px;
+    color: white;
+}
+
+.yellow__bar {
+    background-color: #FFF200;
+    width: 100%;
+    height: 2vh;
+}
+
+.content-area {
+    display: flex;
+    margin-top: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+/* FONT WEIGHTS */
+.roboto-thin {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.roboto-light {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.roboto-regular {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.roboto-medium {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.roboto-bold {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.roboto-black {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.roboto-thin-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.roboto-light-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.roboto-regular-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.roboto-medium-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.roboto-bold-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.roboto-black-italic {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+}
+
+.hamburger-button {
+    background-color: #0D67A1;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.hamburger-button:hover {
+    background-color: #095386;
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        flex-direction: column;
+    }
+
+    .violation-table {
+        margin-right: 0;
+    }
+
+    .violation-info {
+        margin-top: 20px;
+    }
+
+    .search-bar input {
+        width: 100%;
+    }
+}
+
+.inline-buttons {
+    display: flex;
+    gap: 10px; /* Adjust the space between buttons */
+}
+
+#studentDropdown {
+    cursor: pointer;
+}
+
+.card-body{
+    background-color: #f5f5f5;
+    border-radius: 30px;
+    height: 100%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+.card{
+    border: none;
+}
+.card-title, .card-text, .chart-title{
+    color: #0D67A1;
+}
+
+.modern-alert {
+  display: block;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modern-alert-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.modern-alert-danger {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.modern-alert-warning {
+  background-color: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffecb5;
+}
+
+.modern-alert-info {
+  background-color: #cff4fc;
+  color: #055160;
+  border: 1px solid #b6effb;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 290px;
+    height: 100vh;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow-x: hidden;
+}
+
+.sidebar.hidden {
+    margin-left: -290px;
+}
+
+.main-content {
+    margin-left: 240px;
+    transition: all 0.3s ease;
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+.blue__bar h2 {
+    margin-left: 0;
+    transition: all 0.3s ease;
+}
+
+.blue__bar.expanded h2 {
+    margin-left: 70px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-button {
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    z-index: 2000; /* Make sure it's on top */
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.logout-button-wrapper {
+    position: absolute;
+    bottom: 1rem;
+    width: 80%;
+    padding: 0 1rem;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 100%;
+    height: 60vh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;   
+    background-color: #f5f5f5;
+    overflow-x: auto;
+}
+
+.modal-content {
+    border-radius: 1rem;
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.btn-close {
+    outline: none;
+}
+
+.sidebar-content a.active {
+    background-color: #0D67A1;
+    color: white !important;
+    font-weight: bold;
+}
+
+.sidebar-content a.active i {
+    color: white !important;
+}
