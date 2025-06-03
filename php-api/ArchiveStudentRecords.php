@@ -110,6 +110,15 @@ try {
         }
 
         $archivedCount++;
+
+        $deleteStmt = $conn->prepare("
+            DELETE FROM DailyRecords
+            WHERE YEAR(ViolationDate) = :year AND MONTH(ViolationDate) = :month
+        ");
+        $deleteStmt->execute([
+            ':year' => $currentYear,
+            ':month' => $currentMonth
+        ]);
     }
 
     echo json_encode([
