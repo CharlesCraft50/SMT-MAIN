@@ -254,7 +254,7 @@ $(document).ready(function () {
                 $('#archiveLoading').addClass('d-none');
 
                 if (response.success) {
-                    showResponseMessage('#responseMessage', response.message || 'Student records successfully archived.', 'success');
+                    showResponseMessage('#responseMessage', response.message || 'Records archived successfully.', 'success');
                 } else {
                     showResponseMessage('#responseMessage', response.message || 'Archiving failed.', 'danger');
                 }

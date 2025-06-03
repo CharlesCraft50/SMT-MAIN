@@ -67,31 +67,21 @@ CREATE TABLE DailyRecords (
   FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
--- Table: StudentArchive
--- --------------------------------------------------------
 CREATE TABLE StudentArchive (
-  ArchiveID INT NOT NULL AUTO_INCREMENT,
+  RecordID INT NOT NULL AUTO_INCREMENT,
   StudentID INT NOT NULL,
-  ArchiveYear INT NOT NULL,
-  ArchiveMonth INT NOT NULL,
-  TotalAttendance INT NOT NULL DEFAULT 0,
-  TotalViolations INT NOT NULL DEFAULT 0,
-  PendingViolations INT NOT NULL DEFAULT 0,
-  ReviewedViolations INT NOT NULL DEFAULT 0,
-  PRIMARY KEY (ArchiveID),
+  ViolationDate DATE NOT NULL,
+  Attendance BOOLEAN NOT NULL,
+  TimeIn DATETIME,
+  TimeOut DATETIME,
+  Violated BOOLEAN NOT NULL,
+  ViolationType VARCHAR(100),
+  Notes VARCHAR(255),
+  ViolationPicture VARCHAR(255) DEFAULT NULL,
+  ViolationStatus VARCHAR(50) NOT NULL DEFAULT 'Pending',
+  PRIMARY KEY (RecordID),
   FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-CREATE TABLE ArchivedViolations (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    StudentID INT,
-    ViolationType VARCHAR(100),
-    ViolationDate DATE,
-    Violated TINYINT(1),
-    FOREIGN KEY (StudentID) REFERENCES StudentArchive(StudentID)
-)
 
 
 CREATE TABLE ExceptionDays (
