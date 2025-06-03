@@ -242,6 +242,32 @@ $(document).ready(function () {
         // }
     }
 
+    $('#archiveRecordsBtn').click(function () {
+        // Show loading spinner
+        $('#archiveLoading').removeClass('d-none');
+
+        $.ajax({
+            url: '../php-api/ArchiveStudentRecords.php',
+            method: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                $('#archiveLoading').addClass('d-none');
+
+                if (response.success) {
+                    showResponseMessage('#responseMessage', response.message || 'Student records successfully archived.', 'success');
+                } else {
+                    showResponseMessage('#responseMessage', response.message || 'Archiving failed.', 'danger');
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#archiveLoading').addClass('d-none');
+                console.error('AJAX Error:', error);
+                showResponseMessage('#responseMessage', 'An error occurred while archiving student records.', 'danger');
+            }
+        });
+    });
+
+
     fetchExceptionDays();
     fetchCheckingBehavior();
 });

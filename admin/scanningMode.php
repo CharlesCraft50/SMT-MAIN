@@ -154,6 +154,35 @@
                         </div>
                     </div>
                 </div>
+
+
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-lg border-0 rounded-5 h-100 report-card">
+                        <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                            <h5 class="mb-4 fw-semibold text-primary">
+                                <i class="bi bi-archive me-2"></i>Archive Student Records
+                            </h5>
+                            <p class="text-muted mb-4">
+                                Transfer student daily records into the archive table, summarizing attendance and violation data per student per month.
+                            </p>
+                            
+                            <button type="button" id="archiveRecordsBtn" class="btn btn-primary">
+                                <i class="bi bi-download me-2"></i>Archive Now
+                            </button>
+
+                            <div id="archiveLoading" class="d-none mt-4">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                                        <span class="visually-hidden">Archiving Records...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
         </div>
     </div>
