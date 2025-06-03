@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Delete from new DailyRecords table
-        $sql = 'DELETE FROM DailyRecords WHERE RecordID = :RecordID';
+        // Delete from new StudentArchive table
+        $sql = 'DELETE FROM StudentArchive WHERE RecordID = :RecordID';
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':RecordID', $recordID, PDO::PARAM_INT);

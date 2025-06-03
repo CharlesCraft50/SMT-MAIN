@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(400);
     } else {
         try {
-            // Update the DailyRecords table
-            $sql = 'UPDATE DailyRecords 
+            // Update the StudentArchive table
+            $sql = 'UPDATE StudentArchive 
                     SET ViolationDate = :ViolationDate, 
                         Notes = :Notes, 
                         ViolationStatus = :ViolationStatus 

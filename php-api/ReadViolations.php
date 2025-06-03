@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
 
     if ($violationYear) {
-        $whereClauses[] = "YEAR(DailyRecords.ViolationDate) = :ViolationYear";
+        $whereClauses[] = "YEAR(StudentArchive.ViolationDate) = :ViolationYear";
         $params[':ViolationYear'] = $violationYear;
     }
 
@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 Program.ProgramName, 
                 Program.ProgramCode, 
                 Program.ProgramCategory,
-                COUNT(CASE WHEN DailyRecords.Violated = 1 THEN 1 END) AS ViolationCount,
-                SUM(CASE WHEN DailyRecords.ViolationType LIKE "%WithoutUniform%" THEN 1 ELSE 0 END) AS WithoutUniformCount,
-                SUM(CASE WHEN DailyRecords.ViolationType LIKE "%WithoutID%" THEN 1 ELSE 0 END) AS WithoutIDCount,
-                MAX(DailyRecords.ViolationDate) AS LatestViolationDate
+                COUNT(CASE WHEN StudentArchive.Violated = 1 THEN 1 END) AS ViolationCount,
+                SUM(CASE WHEN StudentArchive.ViolationType LIKE "%WithoutUniform%" THEN 1 ELSE 0 END) AS WithoutUniformCount,
+                SUM(CASE WHEN StudentArchive.ViolationType LIKE "%WithoutID%" THEN 1 ELSE 0 END) AS WithoutIDCount,
+                MAX(StudentArchive.ViolationDate) AS LatestViolationDate
             FROM Students
-            LEFT JOIN DailyRecords ON Students.StudentID = DailyRecords.StudentID
+            LEFT JOIN StudentArchive ON Students.StudentID = StudentArchive.StudentID
             LEFT JOIN Program ON Students.ProgramID = Program.ProgramID';
 
     if (!empty($whereClauses)) {

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         exit();
     }
 
-    // Updated SQL with LEFT JOIN on DailyRecords
+    // Updated SQL with LEFT JOIN on StudentArchive
     $sql = 'SELECT 
                 s.StudentID, 
                 s.StudentName, 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 d.ViolationPicture, 
                 d.ViolationStatus
             FROM Students s
-            LEFT JOIN DailyRecords d ON s.StudentID = d.StudentID
+            LEFT JOIN StudentArchive d ON s.StudentID = d.StudentID
             LEFT JOIN Program p ON s.ProgramID = p.ProgramID
             WHERE s.StudentID = :StudentID
             ORDER BY d.ViolationDate DESC';
