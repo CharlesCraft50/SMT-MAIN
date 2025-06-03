@@ -14,49 +14,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $typesParam = isset($_GET['type']) ? $_GET['type'] : null;
         $period = isset($_GET['period']) ? $_GET['period'] : null;
 
-        // If no type specified, return error or set defaults
         if (!$typesParam) {
             echo json_encode(['status' => 'error', 'message' => 'No violation types specified.']);
             exit();
         }
 
-        // Support multiple types separated by comma
         $violationTypes = array_map('trim', explode(',', $typesParam));
-
         $responseData = [];
 
         foreach ($violationTypes as $violationType) {
+            // Build date filter for archive
+            $dateFilter = '';
+            $params = [':violationType' => $violationType];
+
+            // For archive, period filtering is by ArchiveYear and ArchiveMonth
+            // Daily period won't be supported on archive (you could ignore or return empty)
+            if ($period === 'monthly') {
+                $dateFilter = 'AND ArchiveYear = YEAR(CURDATE()) AND ArchiveMonth = MONTH(CURDATE())';
+            } elseif ($period === 'yearly') {
+                $dateFilter = 'AND ArchiveYear = YEAR(CURDATE())';
+            } elseif ($period === 'daily') {
+                // Daily period not supported on archive; return empty or skip filtering
+                // Let's skip data in this case (empty result)
+                $responseData[$violationType] = [];
+                continue;
+            }
+
             $sql = "
                 SELECT 
                     p.ProgramCode,
                     p.ProgramName,
                     p.ProgramCategory,
                     p.Department,
-                    COUNT(dr.RecordID) AS TotalViolations
+                    COALESCE(SUM(sa.TotalViolations), 0) AS TotalViolations
                 FROM Program p
                 LEFT JOIN Students s ON p.ProgramID = s.ProgramID
-                LEFT JOIN DailyRecords dr ON s.StudentID = dr.StudentID
-                    AND dr.Violated = 1
-                    AND dr.ViolationType = :violationType
+                LEFT JOIN StudentArchive sa ON s.StudentID = sa.StudentID
+                LEFT JOIN ArchivedViolations av ON av.StudentID = sa.StudentID
+                    AND av.ViolationType = :violationType
+                WHERE 1=1
+                $dateFilter
+                GROUP BY p.ProgramCode, p.ProgramName, p.ProgramCategory, p.Department
+                ORDER BY p.ProgramCategory, p.Department, p.ProgramName
             ";
-
-            $filters = [];
-            $params = [':violationType' => $violationType];
-
-            if ($period === 'daily') {
-                $filters[] = "DATE(dr.ViolationDate) = CURDATE()";
-            } elseif ($period === 'monthly') {
-                $filters[] = "MONTH(dr.ViolationDate) = MONTH(CURDATE()) AND YEAR(dr.ViolationDate) = YEAR(CURDATE())";
-            } elseif ($period === 'yearly') {
-                $filters[] = "YEAR(dr.ViolationDate) = YEAR(CURDATE())";
-            }
-
-            if (!empty($filters)) {
-                $sql .= " AND " . implode(" AND ", $filters);
-            }
-
-            $sql .= " GROUP BY p.ProgramCode, p.ProgramName, p.ProgramCategory, p.Department
-                      ORDER BY p.ProgramCategory, p.Department, p.ProgramName";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute($params);
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         if (!empty($responseData)) {
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Programs and violations fetched successfully.',
+                'message' => 'Programs and violations fetched successfully (archived).',
                 'data' => $responseData
             ]);
         } else {

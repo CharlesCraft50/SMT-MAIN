@@ -7,33 +7,41 @@ if (!isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] !== true) {
     exit();
 }
 
-require('connect.php');
+require('connect.php');  // your PDO connection in $conn
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $period = $_GET['period'] ?? 'all';
     $dateCondition = '';
 
+    // Build date filtering condition for ArchivedViolations.ViolationDate
     switch ($period) {
         case 'daily':
-            $dateCondition = 'AND DATE(DailyRecords.ViolationDate) = CURDATE()';
+            $dateCondition = "AND DATE(ArchivedViolations.ViolationDate) = CURDATE()";
             break;
         case 'monthly':
-            $dateCondition = 'AND MONTH(DailyRecords.ViolationDate) = MONTH(CURDATE()) AND YEAR(DailyRecords.ViolationDate) = YEAR(CURDATE())';
+            $dateCondition = "AND MONTH(ArchivedViolations.ViolationDate) = MONTH(CURDATE()) AND YEAR(ArchivedViolations.ViolationDate) = YEAR(CURDATE())";
             break;
         case 'yearly':
-            $dateCondition = 'AND YEAR(DailyRecords.ViolationDate) = YEAR(CURDATE())';
+            $dateCondition = "AND YEAR(ArchivedViolations.ViolationDate) = YEAR(CURDATE())";
+            break;
+        case 'all':
+        default:
+            $dateCondition = '';  // no filter on date
             break;
     }
 
+    // Query to find top program with most archived violations
     $sql = "
-        SELECT
-            Program.ProgramName,
-            Program.ProgramCode,
+        SELECT 
+            Program.ProgramName, 
+            Program.ProgramCode, 
             COUNT(*) AS ViolationCount
-        FROM DailyRecords
-        JOIN Students ON DailyRecords.StudentID = Students.StudentID
+        FROM ArchivedViolations
+        JOIN StudentArchive ON ArchivedViolations.StudentID = StudentArchive.StudentID
+        JOIN Students ON StudentArchive.StudentID = Students.StudentID
         JOIN Program ON Students.ProgramID = Program.ProgramID
-        WHERE DailyRecords.Violated = 1 $dateCondition
+        WHERE ArchivedViolations.Violated = 1
+        $dateCondition
         GROUP BY Program.ProgramID
         ORDER BY ViolationCount DESC
         LIMIT 1
@@ -47,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if ($topProgram) {
             echo json_encode([
                 'status' => 'success',
-                'message' => 'Top program with most violations fetched.',
+                'message' => 'Top program with most archived violations fetched.',
                 'period' => $period,
                 'data' => $topProgram
             ]);
@@ -55,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             echo json_encode([
                 'status' => 'failed',
                 'period' => $period,
-                'message' => 'No violations found.'
+                'message' => 'No archived violations found.'
             ]);
         }
     } catch (PDOException $e) {

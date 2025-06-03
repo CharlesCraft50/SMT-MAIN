@@ -43,11 +43,13 @@ try {
     $archivedCount = 0;
 
     foreach ($students as $student) {
+        $studentId = $student['StudentID'];
+
         // Check if already archived
         $checkSql = "SELECT COUNT(*) FROM StudentArchive WHERE StudentID = :StudentID AND ArchiveYear = :year AND ArchiveMonth = :month";
         $checkStmt = $conn->prepare($checkSql);
         $checkStmt->execute([
-            ':StudentID' => $student['StudentID'],
+            ':StudentID' => $studentId,
             ':year' => $currentYear,
             ':month' => $currentMonth
         ]);
@@ -67,10 +69,9 @@ try {
                 :PendingViolations, :ReviewedViolations
             )
         ";
-
         $insertStmt = $conn->prepare($insertSql);
         $insertStmt->execute([
-            ':StudentID' => $student['StudentID'],
+            ':StudentID' => $studentId,
             ':year' => $currentYear,
             ':month' => $currentMonth,
             ':TotalAttendance' => $student['TotalAttendance'],
@@ -78,6 +79,35 @@ try {
             ':PendingViolations' => $student['PendingViolations'],
             ':ReviewedViolations' => $student['ReviewedViolations']
         ]);
+
+        // Fetch and insert violations into ArchivedViolations
+        $violationsStmt = $conn->prepare("
+            SELECT ViolationType, ViolationDate, Violated
+            FROM DailyRecords
+            WHERE StudentID = :StudentID AND Violated = 1
+              AND YEAR(ViolationDate) = :year AND MONTH(ViolationDate) = :month
+        ");
+        $violationsStmt->execute([
+            ':StudentID' => $studentId,
+            ':year' => $currentYear,
+            ':month' => $currentMonth
+        ]);
+
+        $violations = $violationsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $archiveViolationStmt = $conn->prepare("
+            INSERT INTO ArchivedViolations (StudentID, ViolationType, ViolationDate, Violated)
+            VALUES (:StudentID, :ViolationType, :ViolationDate, :Violated)
+        ");
+
+        foreach ($violations as $violation) {
+            $archiveViolationStmt->execute([
+                ':StudentID' => $studentId,
+                ':ViolationType' => $violation['ViolationType'],
+                ':ViolationDate' => $violation['ViolationDate'],
+                ':Violated' => $violation['Violated']
+            ]);
+        }
 
         $archivedCount++;
     }

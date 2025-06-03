@@ -84,6 +84,15 @@ CREATE TABLE StudentArchive (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+CREATE TABLE ArchivedViolations (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    StudentID INT,
+    ViolationType VARCHAR(100),
+    ViolationDate DATE,
+    Violated TINYINT(1),
+    FOREIGN KEY (StudentID) REFERENCES StudentArchive(StudentID)
+)
+
 
 CREATE TABLE ExceptionDays (
     id INT AUTO_INCREMENT PRIMARY KEY,
